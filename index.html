@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LETHE — The River Where Vulnerabilities Cease to Exist</title>
+<meta name="description" content="A security market where vulnerability information is destroyed after verification. Erasure makes us safe.">
+<meta property="og:title" content="LETHE — The River Where Vulnerabilities Cease to Exist">
+<meta property="og:description" content="A security market where vulnerability information is destroyed after verification.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="LETHE — The River Where Vulnerabilities Cease to Exist">
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+<script>
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        "primary": "#c3c7cb",
+        "primary-dim": "#b5b9bd",
+        "primary-container": "#43474b",
+        "on-primary-container": "#cdd1d5",
+        "surface": "#0c0e10",
+        "surface-dim": "#0c0e10",
+        "surface-container-lowest": "#000000",
+        "surface-container-low": "#111416",
+        "surface-container": "#161a1e",
+        "surface-container-high": "#1b2025",
+        "surface-container-highest": "#20262c",
+        "surface-variant": "#20262c",
+        "surface-bright": "#252d33",
+        "on-surface": "#e0e6ed",
+        "on-surface-variant": "#a6acb2",
+        "outline": "#70767c",
+        "outline-variant": "#42494e",
+        "on-background": "#e0e6ed",
+        "error-dim": "#bb5551",
+      },
+      borderRadius: {
+        DEFAULT: "0.25rem",
+        lg: "0.5rem",
+        xl: "0.75rem",
+        full: "9999px",
+      },
+      fontFamily: {
+        headline: ["Newsreader", "Georgia", "serif"],
+        body: ["Inter", "-apple-system", "sans-serif"],
+        label: ["Inter", "sans-serif"],
+      },
+    },
+  },
+}
+</script>
+
+<style>
+body {
+  background-color: #0c0e10;
+  color: #c3c7cb;
+  font-family: "Inter", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.serif-italic {
+  font-family: "Newsreader", serif;
+  font-style: italic;
+}
+.mist-gradient {
+  background: linear-gradient(to bottom, rgba(12,14,16,0.2) 0%, rgba(12,14,16,1) 100%);
+}
+.mist-shroud-up {
+  background: linear-gradient(to top, #0c0e10 0%, transparent 100%);
+}
+.grain {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  opacity: 0.03;
+  pointer-events: none;
+  z-index: 50;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+}
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 200, "GRAD" 0, "opsz" 24;
+  font-size: 1.25rem;
+}
+/* Fade-in on scroll */
+.fade-section {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.fade-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+</style>
+</head>
+
+<body class="selection:bg-slate-800 selection:text-slate-200">
+<div class="grain"></div>
+
+<!-- Navigation -->
+<nav class="fixed top-0 w-full z-[100] bg-transparent backdrop-blur-xl">
+  <div class="flex justify-between items-center px-6 md:px-12 py-5 md:py-6 w-full max-w-screen-2xl mx-auto">
+    <span class="text-xl font-medium tracking-[0.2em] uppercase text-slate-200">Lethe</span>
+    <!-- Desktop Nav -->
+    <div class="hidden md:flex items-center gap-10">
+      <a class="text-slate-500 font-headline italic text-lg tracking-tight opacity-80 hover:opacity-100 hover:text-slate-200 transition-all duration-500" href="demo.html">Demo</a>
+      <a class="text-slate-500 font-headline italic text-lg tracking-tight opacity-80 hover:opacity-100 hover:text-slate-200 transition-all duration-500" href="docs.html">Docs</a>
+    </div>
+    <a href="https://github.com/lethe-protocol" target="_blank" class="bg-primary-container text-on-primary-container px-6 py-2 text-sm tracking-widest uppercase font-medium hover:bg-slate-600 transition-all duration-500 rounded">
+      GitHub
+    </a>
+  </div>
+</nav>
+
+<main class="relative">
+
+  <!-- ============================================================
+       HERO
+       ============================================================ -->
+  <section class="relative h-screen flex flex-col justify-center items-center px-6 overflow-hidden">
+    <div class="absolute inset-0 z-0 opacity-30">
+      <div class="w-full h-full bg-gradient-to-b from-surface-container-high via-surface to-surface"></div>
+      <div class="absolute inset-0 mist-gradient"></div>
+    </div>
+
+    <div class="relative z-10 text-center max-w-4xl mx-auto space-y-12">
+      <div class="flex justify-center">
+        <div class="w-12 h-[1px] bg-outline-variant opacity-40"></div>
+      </div>
+
+      <!-- Desktop: centered, Mobile: left-aligned -->
+      <h1 class="text-4xl md:text-5xl lg:text-6xl font-extralight tracking-tight text-on-surface serif-italic leading-relaxed md:leading-relaxed">
+        The River Where<br>Vulnerabilities Cease to Exist
+      </h1>
+
+      <div class="flex flex-col items-center gap-6">
+        <p class="text-on-surface-variant font-label text-xs uppercase tracking-[0.3em] max-w-sm leading-loose opacity-60">
+          Information erasure as the ultimate primitive of trust
+        </p>
+        <div class="flex gap-4 mt-4">
+          <a href="demo.html" class="bg-primary-container text-on-primary-container px-8 py-3 text-xs tracking-[0.2em] uppercase font-medium hover:bg-slate-600 transition-all duration-700 rounded-lg">
+            Live Demo
+          </a>
+          <a href="#manifesto" class="border border-outline-variant/30 text-on-surface-variant px-8 py-3 text-xs tracking-[0.2em] uppercase font-medium hover:bg-surface-container transition-all duration-700 rounded-lg">
+            Manifesto
+          </a>
+        </div>
+        <div class="mt-8">
+          <span class="material-symbols-outlined text-slate-500 animate-bounce">expand_more</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       MANIFESTO SECTIONS
+       ============================================================ -->
+  <section id="manifesto" class="max-w-screen-xl mx-auto px-6 md:px-12 py-32 space-y-48 md:space-y-64">
+
+    <!-- 01. The Market Flaw -->
+    <div class="fade-section grid md:grid-cols-12 gap-12 items-start">
+      <div class="md:col-span-5 space-y-8">
+        <span class="text-[10px] font-label uppercase tracking-[0.2em] text-outline">01 / The Market Flaw</span>
+        <h2 class="text-2xl md:text-3xl font-light serif-italic text-on-surface">Vulnerabilities are not Weapons</h2>
+        <p class="text-on-surface-variant leading-relaxed text-sm">
+          A person who finds a vulnerability has two choices. Report it and receive ten thousand dollars, or sell it on the black market for a hundred thousand. The incentive structure encourages weaponization. This is not a moral failure of individuals — it is a design failure of the market.
+        </p>
+        <p class="text-on-surface-variant leading-relaxed text-sm">
+          Traditional audits require handing over source code. The moment you do, leak risk is born. As long as vulnerability information exists, it can become a weapon.
+        </p>
+      </div>
+      <div class="md:col-start-7 md:col-span-6">
+        <div class="aspect-[4/5] bg-surface-container-low rounded-lg overflow-hidden relative">
+          <div class="absolute inset-0 bg-gradient-to-br from-surface-container-high to-surface-container-lowest opacity-60"></div>
+          <div class="absolute bottom-8 left-8 right-8">
+            <div class="text-[5rem] font-headline font-extralight text-outline-variant/10 leading-none italic">$100K</div>
+            <p class="text-xs tracking-[0.05em] text-on-surface-variant/50 font-light mt-4">vs $10K — the black market always wins</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 02. Information Erasure -->
+    <div id="how" class="fade-section grid md:grid-cols-12 gap-12 items-center">
+      <div class="md:col-span-6 order-2 md:order-1">
+        <div class="relative aspect-video bg-surface-container rounded-xl flex items-center justify-center overflow-hidden">
+          <div class="absolute inset-0 backdrop-blur-3xl opacity-20 bg-primary-container"></div>
+          <div class="relative z-10 text-center p-8 md:p-12 space-y-6">
+            <span class="material-symbols-outlined text-4xl text-outline-variant">waves</span>
+            <div class="space-y-2">
+              <div class="text-[10px] uppercase tracking-widest text-on-surface-variant">Submit → Audit → Erase → Prove → Settle</div>
+              <div class="text-[10px] uppercase tracking-widest text-outline">Inside the TEE. Nothing leaves.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="md:col-start-8 md:col-span-5 order-1 md:order-2 space-y-8">
+        <span class="text-[10px] font-label uppercase tracking-[0.2em] text-outline">02 / The Solution</span>
+        <h2 class="text-2xl md:text-3xl font-light serif-italic text-on-surface">Information Erasure is the Answer</h2>
+        <p class="text-on-surface-variant leading-relaxed text-sm">
+          Code enters a Trusted Execution Environment. Audit agents analyze, verify, and generate patches inside the TEE. Only encrypted results are delivered to the requester. Then everything is destroyed. The agent forgets. The operator never knew. No one holds the vulnerability.
+        </p>
+        <ul class="space-y-4 pt-4">
+          <li class="flex items-center gap-4 text-xs tracking-wide text-on-surface opacity-70">
+            <span class="w-1.5 h-1.5 rounded-full bg-outline-variant"></span>
+            Proof of Erasure — NIST 800-88 + ECDSA signature
+          </li>
+          <li class="flex items-center gap-4 text-xs tracking-wide text-on-surface opacity-70">
+            <span class="w-1.5 h-1.5 rounded-full bg-outline-variant"></span>
+            zkPoE v2 — O(1) on-chain verification via Groth16
+          </li>
+          <li class="flex items-center gap-4 text-xs tracking-wide text-on-surface opacity-70">
+            <span class="w-1.5 h-1.5 rounded-full bg-outline-variant"></span>
+            Source code never leaves the enclave
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 03. Paradigm Shift -->
+    <div class="fade-section max-w-3xl mx-auto text-center space-y-12">
+      <span class="text-[10px] font-label uppercase tracking-[0.2em] text-outline">03 / The Paradigm</span>
+      <h2 class="text-3xl md:text-4xl font-light serif-italic text-on-surface leading-tight">
+        From "collection makes us safe"<br>
+        to <span class="opacity-40">"erasure makes us safe."</span>
+      </h2>
+      <p class="text-on-surface-variant leading-relaxed text-sm max-w-xl mx-auto">
+        This is not an improvement. It is a paradigm shift. In an era where AI finds vulnerabilities better than humans, what matters is not the discovery — it is what happens to the information after.
+      </p>
+      <div class="h-24 w-[1px] bg-gradient-to-b from-outline-variant to-transparent mx-auto"></div>
+    </div>
+
+    <!-- 04. Agent Economy -->
+    <div class="fade-section space-y-12">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+        <div class="space-y-4">
+          <span class="text-[10px] font-label uppercase tracking-[0.2em] text-outline">04 / Infrastructure</span>
+          <h2 class="text-2xl md:text-3xl font-light serif-italic text-on-surface">The Agent Economy</h2>
+        </div>
+        <p class="text-[10px] text-outline-variant uppercase tracking-widest hidden md:block">Autonomous Auditing</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="md:col-span-2 bg-surface-container-low p-8 rounded-lg space-y-12">
+          <p class="text-sm text-on-surface-variant leading-relaxed max-w-lg">
+            The volume of software autonomously generated by AI agents has already surpassed what humans can audit. Agents auditing agent-written code is inevitable. The question is — under what structure? Tens of thousands of agents holding tens of thousands of vulnerabilities is a world with tens of thousands of weapons in circulation.
+          </p>
+          <div class="flex flex-wrap gap-3">
+            <span class="px-3 py-1 border border-outline-variant/20 rounded-full text-[10px] uppercase tracking-tight">Ephemeral Audit</span>
+            <span class="px-3 py-1 border border-outline-variant/20 rounded-full text-[10px] uppercase tracking-tight">Tool-Agnostic</span>
+            <span class="px-3 py-1 border border-outline-variant/20 rounded-full text-[10px] uppercase tracking-tight">Result-Only Verification</span>
+          </div>
+        </div>
+        <div class="bg-surface-container-highest p-8 rounded-lg flex flex-col justify-end gap-6 min-h-[280px]">
+          <span class="material-symbols-outlined text-4xl font-extralight text-on-surface-variant/30">memory</span>
+          <h3 class="text-lg font-light serif-italic text-on-surface">Stateless Intelligence</h3>
+          <p class="text-xs text-on-surface-variant/60">Thousands of agents audit. None of them remember.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 05. What Works Now -->
+    <div id="status" class="fade-section grid md:grid-cols-12 gap-12">
+      <div class="md:col-span-4 space-y-6">
+        <span class="text-[10px] font-label uppercase tracking-[0.2em] text-outline">05 / Status</span>
+        <h2 class="text-2xl md:text-3xl font-light serif-italic text-on-surface">What Works Now</h2>
+        <p class="text-xs text-on-surface-variant leading-relaxed">
+          This is not a finished product. It is a working proof of protocol. The vision is large. The code is still small. But the direction is right.
+        </p>
+      </div>
+      <div class="md:col-start-6 md:col-span-7 space-y-1">
+        <div class="group py-6 md:py-8 flex items-center justify-between hover:bg-surface-container transition-all duration-500 px-4 rounded-lg">
+          <span class="text-sm font-medium tracking-wide">Proof of Erasure (PoE)</span>
+          <span class="text-[10px] uppercase tracking-widest text-on-surface-variant/60">Live on Testnet</span>
+        </div>
+        <div class="group py-6 md:py-8 flex items-center justify-between hover:bg-surface-container transition-all duration-500 px-4 rounded-lg">
+          <span class="text-sm font-medium tracking-wide">zkPoE v2 — Groth16 Circuit</span>
+          <span class="text-[10px] uppercase tracking-widest text-on-surface-variant/60">Live on Testnet</span>
+        </div>
+        <div class="group py-6 md:py-8 flex items-center justify-between hover:bg-surface-container transition-all duration-500 px-4 rounded-lg">
+          <span class="text-sm font-medium tracking-wide">LetheEscrow — Base Sepolia</span>
+          <span class="text-[10px] uppercase tracking-widest text-on-surface-variant/60">Live on Testnet</span>
+        </div>
+        <div class="group py-6 md:py-8 flex items-center justify-between hover:bg-surface-container transition-all duration-500 px-4 rounded-lg">
+          <span class="text-sm font-medium tracking-wide">Multi-Agent Competition Market</span>
+          <span class="text-[10px] uppercase tracking-widest text-outline/40">Planned</span>
+        </div>
+        <div class="group py-6 md:py-8 flex items-center justify-between hover:bg-surface-container transition-all duration-500 px-4 rounded-lg">
+          <span class="text-sm font-medium tracking-wide">Dispute Escalation (3-Tier)</span>
+          <span class="text-[10px] uppercase tracking-widest text-outline/40">Planned</span>
+        </div>
+        <div class="group py-6 md:py-8 flex items-center justify-between hover:bg-surface-container transition-all duration-500 px-4 rounded-lg">
+          <span class="text-sm font-medium tracking-wide">Real TEE Hardware (SGX/SEV)</span>
+          <span class="text-[10px] uppercase tracking-widest text-outline/40">Planned</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 06. Fork the Future -->
+    <div class="fade-section relative py-24 md:py-32 overflow-hidden rounded-2xl bg-surface-container-low">
+      <div class="relative z-10 text-center space-y-12 px-6">
+        <h2 class="text-3xl md:text-4xl font-light serif-italic text-on-surface">Fork the Future</h2>
+        <div class="max-w-lg mx-auto space-y-6">
+          <p class="text-sm text-on-surface-variant leading-loose">
+            This code is open. If you can build it better, build it. If you want to deploy it on another chain, deploy it. We will not stop you with licenses. The purpose is to eliminate the structure that weaponizes vulnerability information.
+          </p>
+          <p class="text-sm text-on-surface-variant/60 leading-loose serif-italic">
+            If a competitor emerges and builds a better information erasure protocol — that means we won.
+          </p>
+        </div>
+        <div class="flex flex-col md:flex-row items-center justify-center gap-6 pt-4">
+          <a href="https://github.com/lethe-protocol" target="_blank" class="bg-primary-container text-on-primary-container px-10 py-3 text-xs tracking-[0.2em] uppercase font-medium hover:bg-slate-600 transition-all duration-700 rounded-lg">
+            View on GitHub
+          </a>
+          <a href="https://github.com/lethe-protocol/lethe-market/discussions" target="_blank" class="border border-outline-variant/30 text-on-surface-variant px-10 py-3 text-xs tracking-[0.2em] uppercase font-medium hover:bg-surface-container transition-all duration-700 rounded-lg">
+            Join Discussion
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- CTA: Step into the river -->
+  <section class="px-6 py-32 text-center overflow-hidden relative">
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-primary/5 blur-[100px] rounded-full"></div>
+    <div class="relative z-10 max-w-xs mx-auto">
+      <h3 class="text-3xl serif-italic font-light mb-4 text-on-surface">Step into the river.</h3>
+      <p class="text-xs text-on-surface-variant/50 mb-8 leading-loose">What must be forgotten shall be forgotten. What must be remembered shall be remembered.</p>
+      <a href="demo.html" class="inline-block w-full border border-outline-variant/30 py-4 rounded-lg text-xs tracking-[0.2em] uppercase font-medium hover:bg-surface-variant transition-colors">
+        Experience the Demo
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<!-- Footer -->
+<footer class="w-full py-12 bg-transparent">
+  <div class="flex flex-col md:flex-row justify-between items-center px-6 md:px-12 w-full gap-6">
+    <div class="text-[10px] font-label uppercase tracking-[0.15em] text-slate-600">
+      &copy; Lethe Protocol. The river of forgetfulness.
+    </div>
+    <div class="flex flex-wrap justify-center gap-6 md:gap-8">
+      <a class="text-[10px] font-label uppercase tracking-[0.15em] text-slate-600 hover:text-slate-400 transition-all duration-700" href="https://github.com/lethe-protocol" target="_blank">GitHub</a>
+      <a class="text-[10px] font-label uppercase tracking-[0.15em] text-slate-600 hover:text-slate-400 transition-all duration-700" href="demo.html">Demo</a>
+      <a class="text-[10px] font-label uppercase tracking-[0.15em] text-slate-600 hover:text-slate-400 transition-all duration-700" href="docs.html">Docs</a>
+      <a class="text-[10px] font-label uppercase tracking-[0.15em] text-slate-600 hover:text-slate-400 transition-all duration-700" href="https://github.com/lethe-protocol/lethe-market/discussions" target="_blank">Discuss</a>
+    </div>
+  </div>
+  <!-- Funding -->
+  <div class="text-center mt-12 pt-8">
+    <p class="text-[10px] uppercase tracking-[0.15em] text-slate-700 mb-3">Support this protocol</p>
+    <span class="text-[11px] font-mono text-slate-600 bg-surface-container-low px-4 py-2 rounded select-all">0xF0a8701045aFFdad6fC7f0Cb9811ca1bc655Fbb8</span>
+    <p class="text-[10px] text-slate-700 mt-2">Base / Ethereum</p>
+  </div>
+</footer>
+
+<!-- Scroll fade-in -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.fade-section').forEach(function(el) {
+    observer.observe(el);
+  });
+});
+</script>
+
+</body>
+</html>

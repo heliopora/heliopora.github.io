@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LETHE — Documentation</title>
+<meta name="description" content="Technical documentation for the Lethe protocol: Proof of Erasure specification, system architecture, and API reference.">
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+<script>
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        "primary": "#c3c7cb",
+        "primary-container": "#43474b",
+        "on-primary-container": "#cdd1d5",
+        "surface": "#0c0e10",
+        "surface-container-low": "#111416",
+        "surface-container": "#161a1e",
+        "surface-container-high": "#1b2025",
+        "surface-container-highest": "#20262c",
+        "surface-variant": "#20262c",
+        "on-surface": "#e0e6ed",
+        "on-surface-variant": "#a6acb2",
+        "outline": "#70767c",
+        "outline-variant": "#42494e",
+        "on-background": "#e0e6ed",
+      },
+      fontFamily: {
+        headline: ["Newsreader", "Georgia", "serif"],
+        body: ["Inter", "-apple-system", "sans-serif"],
+        label: ["Inter", "sans-serif"],
+      },
+    },
+  },
+}
+</script>
+
+<style>
+body {
+  background-color: #0c0e10;
+  color: #c3c7cb;
+  font-family: "Inter", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.serif-italic {
+  font-family: "Newsreader", serif;
+  font-style: italic;
+}
+.grain {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  opacity: 0.03;
+  pointer-events: none;
+  z-index: 50;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+}
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 200, "GRAD" 0, "opsz" 24;
+  font-size: 1.25rem;
+}
+/* Tab styles */
+.tab-btn {
+  transition: all 0.5s ease;
+}
+.tab-btn.active {
+  color: #e0e6ed;
+  border-bottom: 1px solid #e0e6ed;
+}
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Docs prose */
+.prose h2 {
+  font-family: "Newsreader", serif;
+  font-style: italic;
+  font-weight: 300;
+  font-size: 1.5rem;
+  color: #e0e6ed;
+  margin: 3rem 0 1rem;
+}
+.prose h3 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #a6acb2;
+  margin: 2rem 0 0.75rem;
+}
+.prose p {
+  color: #a6acb2;
+  font-size: 0.875rem;
+  line-height: 1.8;
+  margin-bottom: 1rem;
+}
+.prose strong { color: #e0e6ed; }
+.prose code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  background: #161a1e;
+  padding: 0.15rem 0.4rem;
+  border-radius: 0.25rem;
+  color: #c3c7cb;
+}
+.prose ul {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+}
+.prose ul li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+  color: #a6acb2;
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+.prose ul li::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #42494e;
+  margin-top: 0.5rem;
+  flex-shrink: 0;
+}
+.spec-step {
+  background: #111416;
+  padding: 1.25rem 1.5rem;
+  border-radius: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.spec-step b {
+  color: #e0e6ed;
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+}
+.spec-step p {
+  margin-bottom: 0;
+  margin-top: 0.5rem;
+}
+/* API endpoint */
+.endpoint {
+  background: #111416;
+  padding: 1.25rem 1.5rem;
+  border-radius: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+.endpoint .method {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.25rem;
+  display: inline-block;
+  margin-right: 0.5rem;
+}
+.method-get { background: rgba(74, 222, 128, 0.1); color: #4ADE80; }
+.method-post { background: rgba(96, 165, 250, 0.1); color: #60A5FA; }
+.method-ws { background: rgba(251, 191, 36, 0.1); color: #FBBF24; }
+</style>
+</head>
+
+<body class="selection:bg-slate-800 selection:text-slate-200">
+<div class="grain"></div>
+
+<!-- Navigation -->
+<nav class="fixed top-0 w-full z-[100] bg-transparent backdrop-blur-xl">
+  <div class="flex justify-between items-center px-6 md:px-12 py-5 md:py-6 w-full max-w-screen-2xl mx-auto">
+    <a href="index.html" class="text-xl font-medium tracking-[0.2em] uppercase text-slate-200 no-underline">Lethe</a>
+    <div class="hidden md:flex items-center gap-10">
+      <a class="text-slate-500 font-headline italic text-lg tracking-tight opacity-80 hover:opacity-100 hover:text-slate-200 transition-all duration-500" href="demo.html">Demo</a>
+      <a class="text-slate-200 font-headline italic text-lg tracking-tight border-b border-slate-700/30" href="docs.html">Docs</a>
+    </div>
+    <a href="https://github.com/lethe-protocol" target="_blank" class="bg-primary-container text-on-primary-container px-6 py-2 text-sm tracking-widest uppercase font-medium hover:bg-slate-600 transition-all duration-500 rounded no-underline">
+      GitHub
+    </a>
+  </div>
+</nav>
+
+<main class="pt-32 pb-24 px-6 md:px-12 max-w-4xl mx-auto">
+
+  <!-- Header -->
+  <div class="mb-16">
+    <span class="text-[10px] font-label uppercase tracking-[0.2em] text-outline block mb-4">Technical Reference</span>
+    <h1 class="text-3xl md:text-4xl font-light serif-italic text-on-surface mb-4">Documentation</h1>
+    <p class="text-sm text-on-surface-variant max-w-lg">Protocol specification, system architecture, and API reference for the Lethe information erasure market.</p>
+  </div>
+
+  <!-- Tabs -->
+  <div class="flex gap-8 mb-12">
+    <button class="tab-btn active text-on-surface text-xs uppercase tracking-[0.15em] font-medium pb-3 cursor-pointer bg-transparent border-0" data-tab="poe">PoE Protocol</button>
+    <button class="tab-btn text-outline text-xs uppercase tracking-[0.15em] font-medium pb-3 cursor-pointer bg-transparent border-0 border-b border-transparent hover:text-on-surface-variant" data-tab="arch">Architecture (PoC)</button>
+    <button class="tab-btn text-outline text-xs uppercase tracking-[0.15em] font-medium pb-3 cursor-pointer bg-transparent border-0 border-b border-transparent hover:text-on-surface-variant" data-tab="vision">Vision</button>
+    <button class="tab-btn text-outline text-xs uppercase tracking-[0.15em] font-medium pb-3 cursor-pointer bg-transparent border-0 border-b border-transparent hover:text-on-surface-variant" data-tab="api">API</button>
+  </div>
+
+  <!-- ============================================================
+       TAB: PoE Protocol
+       ============================================================ -->
+  <div id="tab-poe" class="tab-content active prose">
+    <h2>Proof of Erasure Protocol</h2>
+    <p>The cryptographic foundation of Lethe's verified destruction market.</p>
+
+    <h3>Core Principle</h3>
+    <p><strong>The signature implies erasure.</strong> A valid ECDSA signature from a TEE-bound broker enclave key over <code>(auditId, codeHash, "ERASED")</code> constitutes cryptographic proof that the code was received, processed, audited, and destroyed.</p>
+
+    <h3>Protocol Steps</h3>
+    <div class="spec-step">
+      <b>1. Key Generation</b>
+      <p>Broker generates ECDSA key inside TEE enclave. Public key registered in <code>BrokerRegistry.sol</code>. Private key never leaves the enclave.</p>
+    </div>
+    <div class="spec-step">
+      <b>2. Audit Binding</b>
+      <p>Client submits code. <code>keccak256(code)</code> is computed, then <code>LetheEscrow.createAudit(codeHash)</code> creates an on-chain record. The <code>auditId</code> links to code hash immutably.</p>
+    </div>
+    <div class="spec-step">
+      <b>3. TEE Execution</b>
+      <p>Broker enclave receives code, runs static analysis, generates audit report, then performs NIST 800-88 erasure (3-pass: 0x00, 0xFF, random).</p>
+    </div>
+    <div class="spec-step">
+      <b>4. PoE Signing</b>
+      <p>Enclave signs <code>keccak256(abi.encodePacked(auditId, codeHash, "ERASED"))</code> with enclave private key. The ECDSA signature (r, s, v) is the PoE token.</p>
+    </div>
+    <div class="spec-step">
+      <b>5. On-chain Verification</b>
+      <p><code>LetheEscrow.resolve()</code> recovers signer from signature + message. If signer matches registered broker, escrow is released. Trustless verification.</p>
+    </div>
+
+    <h3>Security Properties</h3>
+    <ul>
+      <li><strong>Non-repudiation</strong> — Broker cannot deny a valid PoE signature</li>
+      <li><strong>Confidentiality</strong> — Code never leaves the TEE enclave in plaintext</li>
+      <li><strong>Verifiable destruction</strong> — NIST 800-88 multi-pass ensures data is unrecoverable</li>
+      <li><strong>Trustless</strong> — Anyone can verify PoE on-chain without trusting the broker</li>
+      <li><strong>Attestation</strong> — TEE remote attestation proves the enclave ran unmodified code</li>
+    </ul>
+
+    <h3>zkPoE v2</h3>
+    <p>For constant-time on-chain verification, Lethe implements a Groth16 zero-knowledge circuit that wraps the PoE verification. This allows O(1) gas cost verification regardless of audit complexity. The circuit proves knowledge of a valid PoE signature without revealing the signature itself.</p>
+
+    <h3>Smart Contracts</h3>
+    <p><code>LetheEscrow.sol</code> — Escrow + audit lifecycle + PoE verification<br>
+    <code>BrokerRegistry.sol</code> — Broker registration + public key management + DCAP attestation<br>
+    Deployed on <strong>Base Sepolia</strong> (chainId: 84532)</p>
+  </div>
+
+  <!-- ============================================================
+       TAB: Architecture
+       ============================================================ -->
+  <div id="tab-arch" class="tab-content prose">
+    <h2>System Architecture</h2>
+    <div class="bg-surface-container-low inline-block px-3 py-1 rounded text-[10px] uppercase tracking-widest text-outline mb-4">Current Proof of Concept — Testnet</div>
+    <p>This is what runs today. A single-broker architecture on Base Sepolia testnet with simulated TEE. See the <strong>Vision</strong> tab for where this is going.</p>
+
+    <!-- ASCII diagram styled for dark theme -->
+    <div class="bg-surface-container-low p-6 md:p-8 rounded-lg my-8 overflow-x-auto">
+      <pre class="text-xs md:text-sm text-on-surface-variant font-mono leading-relaxed" style="font-family: 'JetBrains Mono', monospace;"><span style="color:#a6acb2">
+ ┌──────────┐     ┌────────────────┐     ┌─────────────────┐     ┌────────────────┐
+ │</span><span style="color:#60A5FA"> Client   </span><span style="color:#a6acb2">│────▶│</span><span style="color:#4ADE80"> Broker         </span><span style="color:#a6acb2">│────▶│</span><span style="color:#c084fc"> TEE Enclave     </span><span style="color:#a6acb2">│────▶│</span><span style="color:#FBBF24"> Base Sepolia   </span><span style="color:#a6acb2">│
+ │</span><span style="color:#60A5FA"> Browser  </span><span style="color:#a6acb2">│◀────│</span><span style="color:#4ADE80"> FastAPI        </span><span style="color:#a6acb2">│◀────│</span><span style="color:#c084fc"> Gramine/SGX    </span><span style="color:#a6acb2">│     │</span><span style="color:#FBBF24"> LetheEscrow    </span><span style="color:#a6acb2">│
+ └──────────┘     └────────────────┘     └─────────────────┘     │</span><span style="color:#FBBF24"> BrokerRegistry </span><span style="color:#a6acb2">│
+                         │                       │                └────────────────┘
+                         ▼                       ▼
+                  ┌──────────────┐       ┌─────────────────┐
+                  │</span><span style="color:#c084fc"> Semgrep      </span><span style="color:#a6acb2">│       │</span><span style="color:#c084fc"> zkPoE v2       </span><span style="color:#a6acb2">│
+                  │</span><span style="color:#c084fc"> Scanner      </span><span style="color:#a6acb2">│       │</span><span style="color:#c084fc"> circom/snarkjs </span><span style="color:#a6acb2">│
+                  └──────────────┘       └─────────────────┘</span></pre>
+    </div>
+
+    <h3>Components</h3>
+
+    <div class="spec-step">
+      <b>Client</b>
+      <p>Browser or application that submits code via HTTPS and receives real-time updates via WebSocket.</p>
+    </div>
+    <div class="spec-step">
+      <b>Broker (FastAPI)</b>
+      <p>Central orchestration service. Receives audit requests, manages lifecycle, coordinates with TEE enclaves. Exposes REST API and WebSocket endpoints.</p>
+    </div>
+    <div class="spec-step">
+      <b>TEE Enclave (Gramine/SGX)</b>
+      <p>Trusted Execution Environment where code analysis occurs. Currently runs as Docker simulation; production would use actual SGX or SEV hardware. Provides attestation quotes and sealed encryption keys.</p>
+    </div>
+    <div class="spec-step">
+      <b>Semgrep Scanner</b>
+      <p>Static analysis engine running inside the TEE enclave. Scans for vulnerabilities using pattern matching and rule evaluation.</p>
+    </div>
+    <div class="spec-step">
+      <b>Bridge Service</b>
+      <p>Monitors on-chain events (AuditCreated), triggers broker, submits PoE to escrow for resolution.</p>
+    </div>
+    <div class="spec-step">
+      <b>Base Sepolia Contracts</b>
+      <p><code>LetheEscrow</code> manages deposits and verifies PoE signatures. <code>BrokerRegistry</code> maintains broker public keys and attestation status. Chain ID: 84532.</p>
+    </div>
+
+    <h3>Data Flow</h3>
+    <p><strong>1. Submit</strong> — Client sends code to <code>POST /audit/request</code>. Broker stores request, returns <code>audit_id</code>.<br><br>
+    <strong>2. Audit</strong> — Broker forwards code to TEE enclave. Semgrep runs inside enclave, generates findings.<br><br>
+    <strong>3. Erase</strong> — TEE performs NIST 800-88 compliant destruction (multi-pass zeroing).<br><br>
+    <strong>4. Prove</strong> — TEE signs <code>keccak256(audit_id, code_hash, "ERASED")</code> with enclave key. This signature is the Proof of Erasure.<br><br>
+    <strong>5. Settle</strong> — Bridge submits PoE to <code>LetheEscrow.resolve()</code>. On-chain contract recovers signer, verifies against registered broker, releases escrow.</p>
+  </div>
+
+  <!-- ============================================================
+       TAB: Vision Architecture
+       ============================================================ -->
+  <div id="tab-vision" class="tab-content prose">
+    <h2>Vision Architecture</h2>
+    <div class="bg-surface-container-low inline-block px-3 py-1 rounded text-[10px] uppercase tracking-widest text-outline mb-4">Open for Discussion — Help us build this</div>
+    <p>This is where Lethe is going. None of this is implemented yet. We are publishing this architecture openly so that security researchers, protocol engineers, and agent builders can challenge, refine, and contribute to these designs.</p>
+    <p><strong>Discuss these proposals on <a href="https://github.com/lethe-protocol/lethe-market/discussions" target="_blank" style="color:#c3c7cb; text-decoration: underline;">GitHub Discussions</a>.</strong></p>
+
+    <h3>1. Decentralized Performer Model</h3>
+    <p>The current PoC uses a single centralized broker. The target architecture replaces this with a competitive market of independent performers, each running their own TEE environment.</p>
+    <div class="bg-surface-container-low p-6 rounded-lg my-4 overflow-x-auto">
+      <pre class="text-xs text-on-surface-variant font-mono leading-relaxed" style="font-family: 'JetBrains Mono', monospace;"><span style="color:#a6acb2">Current:   Request → Broker (central) → Broker's TEE → Result
+
+Target:    Request → Market (matching) → Performer's TEE → On-chain verification
+                                           ↑
+                                     Any TEE provider:
+                                     • Self-hosted SGX
+                                     • Phala Network (TDX)
+                                     • Marlin Oyster
+                                     • Oasis ROFL</span></pre>
+    </div>
+    <p>Performers register by submitting a TEE attestation quote to <code>BrokerRegistry</code>. The market matches requests to performers via sealed-bid auction. Performers compete on price, speed, and reputation — not on privileged access.</p>
+
+    <h3>2. Sealed-Bid Auction</h3>
+    <p>When a requester submits an audit intent, qualified performers submit encrypted bids. After a designated window (e.g. 30 seconds), bids are revealed simultaneously. The market selects based on a combination of price, performer reputation, and specialization match.</p>
+    <p>This prevents front-running and ensures fair price discovery. The mechanism is not yet designed in detail — <strong>we welcome proposals.</strong></p>
+
+    <h3>3. Three-Tier LLM Verification Pipeline</h3>
+    <p>The current PoC uses Semgrep for static analysis. The vision adds a layered verification architecture where untrusted input never reaches a privileged LLM directly.</p>
+    <div class="bg-surface-container-low p-6 rounded-lg my-4 overflow-x-auto">
+      <pre class="text-xs text-on-surface-variant font-mono leading-relaxed" style="font-family: 'JetBrains Mono', monospace;"><span style="color:#a6acb2">Tier 1: Gatekeeper (no tools)
+  Input:  Raw vulnerability report (untrusted)
+  Output: Sanitized VLS (Vulnerability Logic Summary)
+  Rule:   Strip injection attacks, structure into safe JSON
+
+Tier 2: Analyst (sandboxed tools)
+  Input:  Sanitized VLS only
+  Tools:  execute_poc(), fetch_source(), run_static_analysis()
+  Env:    TEE or sandbox — no persistent storage, no network
+  Output: Verification report (verified / debunked / inconclusive)
+
+Tier 3: Judge (no tools)
+  Input:  Analyst report + VLS + metadata
+  Output: accept / reject / request_more_info
+  Rule:   confidence ≥ 0.8 → auto-settle</span></pre>
+    </div>
+    <p>The key principle: <strong>a tool-bearing LLM never touches untrusted input directly.</strong> This prevents prompt injection from compromising the verification pipeline.</p>
+
+    <h3>4. Asymmetric Reputation System</h3>
+    <p>Reputation must make betrayal structurally unprofitable. The proposed formula:</p>
+    <div class="bg-surface-container-low p-6 rounded-lg my-4">
+      <pre class="text-xs text-on-surface-variant font-mono leading-relaxed" style="font-family: 'JetBrains Mono', monospace;"><span style="color:#a6acb2">Success:  S_new = S_old + (0.10 × (100 - S_old))       // slow growth
+Failure:  S_new = S_old - (0.25 × S_old × 1.6^streak)  // exponential pain
+
+Loss/gain ratio: 2.5×
+Consecutive failure: exponential penalty
+  1 failure:  -25%
+  2 failures: -40%
+  3 failures: -64%
+
+Circuit breaker:
+  Score ≥ 50: ACTIVE
+  Score 30-49: WARNING (reduced privileges)
+  Score < 30: SUSPENDED (blocked from market)</span></pre>
+    </div>
+    <p>Reputation is bound to a Soulbound Token (SBT) — non-transferable. A performer's track record stays with them. Forking the market doesn't fork the reputation.</p>
+
+    <h3>5. Dispute Escalation</h3>
+    <p>Three levels, with increasing cost borne by the losing party:</p>
+    <div class="spec-step">
+      <b>Level 1 — Self-Verification</b>
+      <p>Requester verifies findings independently. Cost: free. Resolves most disputes.</p>
+    </div>
+    <div class="spec-step">
+      <b>Level 2 — Single Arbiter</b>
+      <p>A neutral arbiter agent reviews the case inside a fresh TEE. Cost: 5% of transaction value, paid by loser.</p>
+    </div>
+    <div class="spec-step">
+      <b>Level 3 — Three-Judge Panel</b>
+      <p>Majority vote from three independent arbiter agents. Cost: 15% of transaction value, paid by loser. Final and binding.</p>
+    </div>
+
+    <h3>6. Domain Expansion</h3>
+    <p>The escrow layer is designed to be domain-agnostic. The verification logic is a plugin. Expanding to new domains means writing a new verification plugin — not modifying the market infrastructure.</p>
+    <div class="bg-surface-container-low p-6 rounded-lg my-4">
+      <pre class="text-xs text-on-surface-variant font-mono leading-relaxed" style="font-family: 'JetBrains Mono', monospace;"><span style="color:#a6acb2">Phase 1: Smart contract security audit (current)
+Phase 2: General code review
+Phase 3: Data integrity verification
+Phase 4: AI model security (adversarial robustness)
+
+Lower layer (domain-agnostic):
+  Escrow, matching, settlement, reputation
+
+Upper layer (pluggable):
+  Verification protocol per domain</span></pre>
+    </div>
+
+    <h3>7. TEE Limitations — Honest Assessment</h3>
+    <p>TEE hardware has been breached before (Foreshadow 2018, Plundervolt 2019, SGAxe 2020, AEPIC Leak 2022). Lethe's core premise — "information exists only inside the TEE" — is only as strong as the TEE itself.</p>
+    <p>Mitigations on the roadmap:</p>
+    <ul>
+      <li><strong>Multi-vendor TEE</strong> — Mix Intel SGX + AMD SEV + ARM TrustZone. A single vendor vulnerability doesn't compromise the entire market.</li>
+      <li><strong>ZK transition</strong> — Long-term, replace hardware trust with mathematical proof. Currently impractical for LLM inference cost, but the field is advancing rapidly.</li>
+      <li><strong>Continuous self-audit</strong> — Use the market's own agents to audit the market's TEE infrastructure.</li>
+    </ul>
+    <p>We believe TEE-based erasure is the best available primitive today. It is not perfect. We say this openly because security communities rightly distrust projects that claim invulnerability.</p>
+
+    <div class="bg-surface-container p-8 rounded-lg my-8 text-center">
+      <p class="text-sm text-on-surface-variant mb-4">These designs are open proposals. Challenge them.</p>
+      <a href="https://github.com/lethe-protocol/lethe-market/discussions" target="_blank" class="inline-block bg-primary-container text-on-primary-container px-8 py-3 text-xs tracking-[0.2em] uppercase font-medium hover:bg-slate-600 transition-all duration-700 rounded-lg no-underline">
+        Join the Discussion
+      </a>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TAB: API
+       ============================================================ -->
+  <div id="tab-api" class="tab-content prose">
+    <h2>API Reference</h2>
+    <p>The Broker exposes a REST API and WebSocket endpoint for audit lifecycle management.</p>
+
+    <h3>Base URL</h3>
+    <p><code>http://localhost:8000</code> (local) or your deployed broker endpoint.</p>
+
+    <h3>Endpoints</h3>
+
+    <div class="endpoint">
+      <div class="mb-2">
+        <span class="method method-post">POST</span>
+        <code>/audit/request</code>
+      </div>
+      <p>Submit code for audit. Returns an <code>audit_id</code> for tracking.</p>
+      <p><strong>Body:</strong></p>
+      <div class="bg-surface-container-lowest p-4 rounded text-xs font-mono text-on-surface-variant my-2" style="font-family: 'JetBrains Mono', monospace;">
+{<br>
+&nbsp;&nbsp;"code": "def bad(): password = '123456'",<br>
+&nbsp;&nbsp;"language": "python"<br>
+}
+      </div>
+      <p><strong>Response:</strong> <code>{"audit_id": "aud-xxxx", "status": "pending"}</code></p>
+    </div>
+
+    <div class="endpoint">
+      <div class="mb-2">
+        <span class="method method-get">GET</span>
+        <code>/audit/status/{audit_id}</code>
+      </div>
+      <p>Check audit status. Returns current state, findings (if complete), and PoE data.</p>
+      <p><strong>States:</strong> <code>pending</code> → <code>running</code> → <code>completed</code> → <code>erased</code></p>
+    </div>
+
+    <div class="endpoint">
+      <div class="mb-2">
+        <span class="method method-ws">WS</span>
+        <code>/ws/audit/{audit_id}</code>
+      </div>
+      <p>WebSocket for real-time audit progress. Receives status updates as the audit progresses through each stage.</p>
+    </div>
+
+    <div class="endpoint">
+      <div class="mb-2">
+        <span class="method method-post">POST</span>
+        <code>/audit/trigger</code>
+      </div>
+      <p>Manually trigger audit processing for a pending audit. Used by the bridge when on-chain events are detected.</p>
+    </div>
+
+    <div class="endpoint">
+      <div class="mb-2">
+        <span class="method method-get">GET</span>
+        <code>/health</code>
+      </div>
+      <p>Health check. Returns broker status and available TEE backends.</p>
+    </div>
+
+    <div class="endpoint">
+      <div class="mb-2">
+        <span class="method method-get">GET</span>
+        <code>/backends</code>
+      </div>
+      <p>List registered TEE backends and their attestation status (SGX, TDX, Mock).</p>
+    </div>
+
+    <h3>Quick Start</h3>
+    <div class="bg-surface-container-low p-6 rounded-lg my-4">
+      <pre class="text-xs text-on-surface-variant font-mono leading-loose" style="font-family: 'JetBrains Mono', monospace;"><span style="color:#70767c"># Start broker</span>
+cd broker && uvicorn main:app --port 8000
+
+<span style="color:#70767c"># Submit audit</span>
+curl -X POST http://localhost:8000/audit/request \
+  -H "Content-Type: application/json" \
+  -d '{"code": "def bad(): password = \"123456\"", "language": "python"}'
+
+<span style="color:#70767c"># Check status</span>
+curl http://localhost:8000/audit/status/aud-xxxx</pre>
+    </div>
+  </div>
+
+</main>
+
+<!-- Footer -->
+<footer class="w-full py-12 bg-transparent">
+  <div class="flex flex-col md:flex-row justify-between items-center px-6 md:px-12 w-full gap-6">
+    <div class="text-[10px] font-label uppercase tracking-[0.15em] text-slate-600">
+      &copy; Lethe Protocol. The river of forgetfulness.
+    </div>
+    <div class="flex flex-wrap justify-center gap-6 md:gap-8">
+      <a class="text-[10px] font-label uppercase tracking-[0.15em] text-slate-600 hover:text-slate-400 transition-all duration-700" href="https://github.com/lethe-protocol" target="_blank">GitHub</a>
+      <a class="text-[10px] font-label uppercase tracking-[0.15em] text-slate-600 hover:text-slate-400 transition-all duration-700" href="demo.html">Demo</a>
+      <a class="text-[10px] font-label uppercase tracking-[0.15em] text-slate-600 hover:text-slate-400 transition-all duration-700" href="https://github.com/lethe-protocol/lethe-market/discussions" target="_blank">Discuss</a>
+    </div>
+  </div>
+</footer>
+
+<!-- Tab switching -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const tabs = document.querySelectorAll('.tab-btn');
+  const contents = document.querySelectorAll('.tab-content');
+
+  tabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      var target = this.getAttribute('data-tab');
+
+      tabs.forEach(function(t) { t.classList.remove('active'); });
+      contents.forEach(function(c) { c.classList.remove('active'); });
+
+      this.classList.add('active');
+      document.getElementById('tab-' + target).classList.add('active');
+    });
+  });
+});
+</script>
+
+</body>
+</html>

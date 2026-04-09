@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LETHE — Interactive Audit Demo</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+<script>
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        "primary": "#c3c7cb", "primary-container": "#43474b", "on-primary-container": "#cdd1d5",
+        "surface": "#0c0e10", "surface-container-low": "#111416", "surface-container": "#161a1e",
+        "surface-container-high": "#1b2025", "surface-container-highest": "#20262c", "surface-variant": "#20262c",
+        "on-surface": "#e0e6ed", "on-surface-variant": "#a6acb2", "outline": "#70767c", "outline-variant": "#42494e",
+        "error-dim": "#bb5551",
+      },
+      fontFamily: {
+        headline: ["Newsreader", "Georgia", "serif"], body: ["Inter", "-apple-system", "sans-serif"],
+        label: ["Inter", "sans-serif"], mono: ["'JetBrains Mono'", "Consolas", "monospace"],
+      },
+    },
+  },
+}
+</script>
+
+<style>
+body { background-color: #0c0e10; color: #c3c7cb; font-family: "Inter", sans-serif; -webkit-font-smoothing: antialiased; }
+.serif-italic { font-family: "Newsreader", serif; font-style: italic; }
+.grain { position: fixed; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.03; pointer-events: none; z-index: 50;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E"); }
+.material-symbols-outlined { font-variation-settings: "FILL" 0, "wght" 200, "GRAD" 0, "opsz" 24; font-size: 1.25rem; }
+.pipeline { display: flex; align-items: center; gap: 0; margin: 2rem 0; }
+.pipe-step { flex: 1; text-align: center; padding: 1rem 0.5rem; transition: all 0.5s ease; }
+.pipe-step .pipe-num { width: 28px; height: 28px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; font-weight: 600; background: #161a1e; color: #70767c; border: 1px solid #42494e; margin-bottom: 0.5rem; transition: all 0.5s ease; }
+.pipe-step .pipe-label { display: block; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: #70767c; transition: color 0.5s ease; }
+.pipe-step.active .pipe-num { background: #c3c7cb; color: #0c0e10; border-color: #c3c7cb; }
+.pipe-step.active .pipe-label { color: #e0e6ed; }
+.pipe-step.completed .pipe-num { background: #42494e; color: #a6acb2; border-color: #42494e; }
+.pipe-step.completed .pipe-label { color: #a6acb2; }
+.pipe-connector { width: 100%; height: 1px; background: #42494e; flex-shrink: 1; min-width: 12px; }
+.sev-critical { background: rgba(187,85,81,0.15); color: #ee7d77; }
+.sev-high { background: rgba(251,191,36,0.15); color: #FBBF24; }
+.sev-medium { background: rgba(166,172,178,0.15); color: #a6acb2; }
+.sev-low { background: rgba(166,172,178,0.1); color: #70767c; }
+.ws-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+.ws-dot.connected { background: #4ADE80; } .ws-dot.disconnected { background: #ee7d77; } .ws-dot.idle { background: #42494e; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid #42494e; border-top-color: #c3c7cb;
+  border-radius: 50%; animation: spin 0.6s linear infinite; margin-right: 8px; vertical-align: middle; }
+</style>
+</head>
+
+<body class="selection:bg-slate-800 selection:text-slate-200">
+<div class="grain"></div>
+<nav class="fixed top-0 w-full z-[100] bg-transparent backdrop-blur-xl">
+  <div class="flex justify-between items-center px-6 md:px-12 py-5 md:py-6 w-full max-w-screen-2xl mx-auto">
+    <a href="index.html" class="text-xl font-medium tracking-[0.2em] uppercase text-slate-200 no-underline">Lethe</a>
+    <div class="hidden md:flex items-center gap-10">
+      <a class="text-slate-200 font-headline italic text-lg tracking-tight border-b border-slate-700/30" href="demo.html">Demo</a>
+      <a class="text-slate-500 font-headline italic text-lg tracking-tight opacity-80 hover:opacity-100 hover:text-slate-200 transition-all duration-500" href="docs.html">Docs</a>
+    </div>
+    <a href="https://github.com/lethe-protocol" target="_blank" class="bg-primary-container text-on-primary-container px-6 py-2 text-sm tracking-widest uppercase font-medium hover:bg-slate-600 transition-all duration-500 rounded no-underline">GitHub</a>
+  </div>
+</nav>
+
+<main class="pt-32 pb-24 px-6 md:px-12 max-w-3xl mx-auto">
+  <div class="mb-12">
+    <span class="text-[10px] font-label uppercase tracking-[0.2em] text-outline block mb-4">Interactive Experience</span>
+    <h1 class="text-3xl md:text-4xl font-light serif-italic text-on-surface mb-3">Audit Demo</h1>
+    <p class="text-sm text-on-surface-variant max-w-lg">Submit code and watch the erasure cycle unfold. This demo runs in simulation mode — no broker connection required.</p>
+  </div>
+
+  <details class="mb-8"><summary class="text-[10px] font-label uppercase tracking-[0.15em] text-outline cursor-pointer hover:text-on-surface-variant transition-colors">Broker Configuration</summary>
+    <div class="mt-4 bg-surface-container-low p-6 rounded-lg space-y-3">
+      <label class="text-[10px] font-label uppercase tracking-[0.15em] text-outline block">Broker URL</label>
+      <input type="text" id="brokerUrl" value="http://localhost:8000" class="w-full bg-surface border border-outline-variant/30 rounded px-4 py-2.5 text-sm text-on-surface font-mono focus:border-primary/50 focus:outline-none transition-colors">
+      <div class="flex items-center text-[10px] text-outline" id="wsStatus"><span class="ws-dot idle"></span>Enter broker URL and submit to begin</div>
+    </div>
+  </details>
+
+  <div id="submitCard" class="space-y-6"><div class="bg-surface-container-low p-6 md:p-8 rounded-lg space-y-6">
+    <div class="space-y-2"><label class="text-[10px] font-label uppercase tracking-[0.15em] text-outline block">Language</label>
+      <select id="language" class="w-full bg-surface border border-outline-variant/30 rounded px-4 py-2.5 text-sm text-on-surface focus:border-primary/50 focus:outline-none transition-colors appearance-none cursor-pointer">
+        <option value="solidity">Solidity</option><option value="rust">Rust</option><option value="python">Python</option>
+      </select></div>
+    <div class="space-y-2"><label class="text-[10px] font-label uppercase tracking-[0.15em] text-outline block">Source Code</label>
+      <textarea id="code" rows="8" placeholder="Paste your code here for private audit..." class="w-full bg-surface border border-outline-variant/30 rounded px-4 py-3 text-sm text-on-surface font-mono leading-relaxed focus:border-primary/50 focus:outline-none transition-colors resize-y"></textarea></div>
+    <button id="submitBtn" class="bg-primary-container text-on-primary-container px-8 py-3 text-xs tracking-[0.2em] uppercase font-medium hover:bg-slate-600 transition-all duration-500 rounded-lg w-full md:w-auto cursor-pointer">Submit Audit</button>
+  </div></div>
+
+  <div id="simulationBanner" style="display:none" class="bg-surface-container-low px-6 py-3 rounded-lg text-[10px] uppercase tracking-[0.15em] text-outline flex items-center gap-3 my-6">
+    <span class="material-symbols-outlined text-sm">cloud_off</span><span id="simulationText">Simulation mode</span></div>
+
+  <div id="statusDisplay" style="display:none" class="my-8 space-y-6"><div class="bg-surface-container-low p-6 md:p-8 rounded-lg">
+    <div class="pipeline">
+      <div class="pipe-step" id="step-submitted"><div class="pipe-num">1</div><span class="pipe-label">Submit</span></div><div class="pipe-connector"></div>
+      <div class="pipe-step" id="step-queued"><div class="pipe-num">2</div><span class="pipe-label">Queue</span></div><div class="pipe-connector"></div>
+      <div class="pipe-step" id="step-auditing"><div class="pipe-num">3</div><span class="pipe-label">Audit</span></div><div class="pipe-connector"></div>
+      <div class="pipe-step" id="step-poe_generated"><div class="pipe-num">4</div><span class="pipe-label">PoE</span></div><div class="pipe-connector"></div>
+      <div class="pipe-step" id="step-resolved"><div class="pipe-num">5</div><span class="pipe-label">Resolve</span></div>
+    </div>
+    <div class="space-y-3 mt-6">
+      <div class="flex justify-between items-center text-sm"><span class="text-on-surface-variant">Audit ID</span><span class="font-mono text-on-surface text-xs" id="statusAuditId">-</span></div>
+      <div class="flex justify-between items-center text-sm"><span class="text-on-surface-variant">Status</span><span class="flex items-center gap-2"><span class="text-[10px] uppercase tracking-widest font-medium text-on-surface" id="statusBadge">SUBMITTED</span><span class="text-[10px] uppercase tracking-widest text-outline hidden" id="simBadge">SIM</span></span></div>
+      <div class="flex justify-between items-center text-sm"><span class="text-on-surface-variant">Phase</span><span class="text-xs text-on-surface-variant" id="statusMessage">-</span></div>
+    </div>
+  </div></div>
+
+  <div id="resultBox" style="display:none" class="my-8 space-y-6">
+    <div class="bg-surface-container-low p-6 md:p-8 rounded-lg space-y-6">
+      <div class="flex items-center gap-3 mb-2"><span class="material-symbols-outlined text-on-surface-variant">verified</span><h3 class="text-lg font-light serif-italic text-on-surface">Proof of Erasure Generated</h3></div>
+      <div class="space-y-4">
+        <div class="space-y-1"><div class="text-[10px] font-label uppercase tracking-[0.15em] text-outline">PoE Token</div><div class="font-mono text-xs text-on-surface break-all bg-surface p-3 rounded" id="resultToken">-</div></div>
+        <div id="memCommitmentRow" style="display:none" class="space-y-1"><div class="text-[10px] font-label uppercase tracking-[0.15em] text-outline">Memory Commitment</div><div class="font-mono text-xs text-on-surface break-all bg-surface p-3 rounded" id="resultMemCommitment">-</div></div>
+        <div id="zkProofRow" style="display:none" class="space-y-1"><div class="text-[10px] font-label uppercase tracking-[0.15em] text-outline">zkSNARK Proof</div><div class="font-mono text-xs text-on-surface break-all bg-surface p-3 rounded" id="resultZkProof">-</div></div>
+        <div class="space-y-1"><div class="text-[10px] font-label uppercase tracking-[0.15em] text-outline">ECDSA Signature</div><div class="font-mono text-xs text-on-surface break-all bg-surface p-3 rounded" id="resultSignature">-</div></div>
+      </div>
+    </div>
+    <div id="findingsSection" style="display:none" class="bg-surface-container-low p-6 md:p-8 rounded-lg"><h4 class="text-[10px] font-label uppercase tracking-[0.15em] text-outline mb-4">Audit Findings</h4><div id="findingsList" class="space-y-3"></div></div>
+    <button onclick="resetDemo()" class="border border-outline-variant/30 text-on-surface-variant px-8 py-3 text-xs tracking-[0.2em] uppercase font-medium hover:bg-surface-container transition-all duration-500 rounded-lg cursor-pointer">New Audit</button>
+  </div>
+
+  <div id="errorBox" style="display:none" class="my-8"><div class="bg-surface-container-low p-6 rounded-lg space-y-4">
+    <div class="flex items-center gap-3"><span class="material-symbols-outlined text-error-dim">error</span><span class="text-sm font-medium text-on-surface">Error</span></div>
+    <p class="text-sm text-on-surface-variant" id="errorMessage">An error occurred.</p>
+    <button onclick="resetDemo()" class="border border-outline-variant/30 text-on-surface-variant px-6 py-2 text-xs tracking-[0.2em] uppercase font-medium hover:bg-surface-container transition-all duration-500 rounded-lg cursor-pointer">Try Again</button>
+  </div></div>
+
+  <div class="mt-16 space-y-6">
+    <h3 class="text-[10px] font-label uppercase tracking-[0.15em] text-outline">How It Works</h3>
+    <div class="space-y-4">
+      <div class="flex gap-4 items-start"><span class="text-outline/30 text-lg font-light serif-italic">01</span><div><span class="text-sm text-on-surface font-medium">Submit</span><p class="text-xs text-on-surface-variant mt-1">Code is sent to the Lethe broker for processing</p></div></div>
+      <div class="flex gap-4 items-start"><span class="text-outline/30 text-lg font-light serif-italic">02</span><div><span class="text-sm text-on-surface font-medium">Audit</span><p class="text-xs text-on-surface-variant mt-1">Static analysis runs inside a TEE enclave</p></div></div>
+      <div class="flex gap-4 items-start"><span class="text-outline/30 text-lg font-light serif-italic">03</span><div><span class="text-sm text-on-surface font-medium">Erase</span><p class="text-xs text-on-surface-variant mt-1">NIST 800-88 multi-pass destruction inside the enclave</p></div></div>
+      <div class="flex gap-4 items-start"><span class="text-outline/30 text-lg font-light serif-italic">04</span><div><span class="text-sm text-on-surface font-medium">Prove</span><p class="text-xs text-on-surface-variant mt-1">Cryptographic Proof of Erasure token is generated and signed</p></div></div>
+      <div class="flex gap-4 items-start"><span class="text-outline/30 text-lg font-light serif-italic">05</span><div><span class="text-sm text-on-surface font-medium">Settle</span><p class="text-xs text-on-surface-variant mt-1">On-chain verification completes the audit lifecycle</p></div></div>
+    </div>
+  </div>
+</main>
+
+<footer class="w-full py-12 bg-transparent">
+  <div class="flex flex-col md:flex-row justify-between items-center px-6 md:px-12 w-full gap-6">
+    <div class="text-[10px] font-label uppercase tracking-[0.15em] text-slate-600">&copy; Lethe Protocol. The river of forgetfulness.</div>
+    <div class="flex flex-wrap justify-center gap-6 md:gap-8">
+      <a class="text-[10px] font-label uppercase tracking-[0.15em] text-slate-600 hover:text-slate-400 transition-all duration-700" href="https://github.com/lethe-protocol" target="_blank">GitHub</a>
+      <a class="text-[10px] font-label uppercase tracking-[0.15em] text-slate-600 hover:text-slate-400 transition-all duration-700" href="index.html">Home</a>
+      <a class="text-[10px] font-label uppercase tracking-[0.15em] text-slate-600 hover:text-slate-400 transition-all duration-700" href="docs.html">Docs</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// NOTE: The sample findings below are hardcoded demonstration data for the simulation mode.
+// They show example vulnerability patterns to illustrate how the audit results look.
+// In production, findings would come from the actual TEE-based audit process.
+var currentAuditId=null,wsConnection=null,isSimulationMode=false,simulationTimeouts=[];
+var brokerUrlInput=document.getElementById('brokerUrl'),languageSelect=document.getElementById('language'),codeTextarea=document.getElementById('code'),submitBtn=document.getElementById('submitBtn'),submitCard=document.getElementById('submitCard'),simulationBanner=document.getElementById('simulationBanner'),simulationText=document.getElementById('simulationText'),statusDisplay=document.getElementById('statusDisplay'),resultBox=document.getElementById('resultBox'),errorBox=document.getElementById('errorBox'),wsStatus=document.getElementById('wsStatus');
+var PIPELINE_STEPS=['submitted','queued','auditing','poe_generated','resolved'];
+var SAMPLE_FINDINGS={solidity:[{rule_id:'solhint.reentrancy',severity:'HIGH',message:'Potential reentrancy vulnerability in external call',file:'contract.sol',line:134},{rule_id:'solhint.unchecked-send',severity:'MEDIUM',message:'Unchecked return value from ERC20 transfer',file:'contract.sol',line:201},{rule_id:'solhint.integer-overflow',severity:'HIGH',message:'Integer overflow in balance calculation',file:'contract.sol',line:56}],rust:[{rule_id:'rustsec.unsafe_usage',severity:'HIGH',message:'Usage of unsafe code block requires review',file:'src/main.rs',line:42},{rule_id:'rustsec.expect_suspicious',severity:'MEDIUM',message:'Use of expect() on None value',file:'src/main.rs',line:88},{rule_id:'clippy.panic',severity:'LOW',message:'Unnecessary panic! macro usage',file:'src/main.rs',line:15}],python:[{rule_id:'python.security.injection.subprocess',severity:'HIGH',message:'Potential command injection in subprocess call',file:'app.py',line:42},{rule_id:'python.lang.credentials.hardcoded',severity:'CRITICAL',message:'Hardcoded credentials detected',file:'app.py',line:17},{rule_id:'python.security.deserialization',severity:'HIGH',message:'Insecure deserialization detected',file:'app.py',line:88}]};
+var SIMULATION_DELAYS=[500,2500,3000,3500,2500];
+function getBrokerUrl(){return brokerUrlInput.value.replace(/\/$/,'')}
+function updateWsStatus(status,message){var dot=status==='connected'?'connected':status==='disconnected'?'disconnected':'idle';var dotEl=document.createElement('span');dotEl.className='ws-dot '+dot;wsStatus.textContent='';wsStatus.appendChild(dotEl);wsStatus.appendChild(document.createTextNode(message))}
+function resetPipeline(){PIPELINE_STEPS.forEach(function(step,i){var el=document.getElementById('step-'+step);el.classList.remove('active','completed');el.querySelector('.pipe-num').textContent=(i+1).toString()})}
+function updatePipeline(step){resetPipeline();var stepIndex=PIPELINE_STEPS.indexOf(step);PIPELINE_STEPS.forEach(function(s,i){var el=document.getElementById('step-'+s);if(i<stepIndex){el.classList.add('completed');el.querySelector('.pipe-num').textContent='\u2713'}else if(i===stepIndex){el.classList.add('active')}})}
+async function generateFakePoE(auditId){var data=new TextEncoder().encode(auditId+':'+Date.now());var hashBuffer=await crypto.subtle.digest('SHA-256',data);var hashArray=Array.from(new Uint8Array(hashBuffer));return'0x'+hashArray.map(function(b){return b.toString(16).padStart(2,'0')}).join('')}
+function randomHex(bytes){return'0x'+Array.from({length:bytes*2},function(){return Math.floor(Math.random()*16).toString(16)}).join('')}
+submitBtn.addEventListener('click',async function(){var code=codeTextarea.value.trim();if(!code){showError('Please enter code to submit.');return}submitBtn.disabled=true;var spinnerEl=document.createElement('span');spinnerEl.className='spinner';submitBtn.textContent='';submitBtn.appendChild(spinnerEl);submitBtn.appendChild(document.createTextNode('Submitting...'));try{var brokerUrl=getBrokerUrl();var response=await fetch(brokerUrl+'/audit/request',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:code,language:languageSelect.value})});if(!response.ok)throw new Error('HTTP '+response.status);var data=await response.json();currentAuditId=data.audit_id;showStatusDisplay();document.getElementById('statusAuditId').textContent=currentAuditId;document.getElementById('statusBadge').textContent='SUBMITTED';document.getElementById('statusMessage').textContent=data.message||'Audit request accepted';updatePipeline('submitted');connectWebSocket(currentAuditId)}catch(error){console.warn('Broker unreachable:',error);enableSimulationMode();startSimulation()}finally{submitBtn.disabled=false;submitBtn.textContent='Submit Audit'}});
+function showStatusDisplay(){submitCard.style.display='none';statusDisplay.style.display='block';resultBox.style.display='none';errorBox.style.display='none';simulationBanner.style.display='none'}
+function enableSimulationMode(){isSimulationMode=true;simulationBanner.style.display='flex';simulationText.textContent='Simulation mode \u2014 broker not reachable';document.getElementById('simBadge').classList.remove('hidden');updateWsStatus('disconnected','Simulation mode (no broker connection)')}
+function connectWebSocket(auditId){cleanupWebSocket();var brokerUrl=getBrokerUrl();var wsProtocol=brokerUrl.startsWith('https')?'wss:':'ws:';var wsUrl=wsProtocol+'//'+brokerUrl.replace(/^https?:\/\//,'')+'/ws/audit/'+auditId;updateWsStatus('idle','Connecting...');try{wsConnection=new WebSocket(wsUrl);wsConnection.onopen=function(){updateWsStatus('connected','WebSocket connected')};wsConnection.onmessage=function(event){try{handleWebSocketMessage(JSON.parse(event.data))}catch(e){console.error('Parse error:',e)}};wsConnection.onerror=function(){updateWsStatus('disconnected','WebSocket error')};wsConnection.onclose=function(){updateWsStatus('disconnected','WebSocket disconnected');wsConnection=null}}catch(e){updateWsStatus('disconnected','WebSocket not available')}}
+function handleWebSocketMessage(data){if(data.type==='complete'){showResults(data.data||data);return}if(data.type==='status_update'||data.type==='status'){var step=data.step||mapStatusToStep(data.status);document.getElementById('statusBadge').textContent=(data.status||'SUBMITTED').toUpperCase();document.getElementById('statusMessage').textContent=step||'-';updatePipeline(step||'submitted')}}
+function mapStatusToStep(status){var map={'PENDING':'submitted','RUNNING':'auditing','COMPLETED':'poe_generated','ERASED':'resolved','FAILED':'failed'};return map[status]||'submitted'}
+function cleanupWebSocket(){if(wsConnection){wsConnection.close();wsConnection=null}simulationTimeouts.forEach(function(t){clearTimeout(t)});simulationTimeouts=[]}
+async function startSimulation(){currentAuditId='sim-'+crypto.randomUUID().slice(0,8);showStatusDisplay();document.getElementById('statusAuditId').textContent=currentAuditId;var language=languageSelect.value;var simData={findings:null,poeToken:null};for(var i=0;i<PIPELINE_STEPS.length;i++){var step=PIPELINE_STEPS[i];document.getElementById('statusBadge').textContent=step.replace('_',' ').toUpperCase();document.getElementById('statusMessage').textContent=step.replace('_',' ');updatePipeline(step);if(step==='auditing'){simData.findings=SAMPLE_FINDINGS[language]||SAMPLE_FINDINGS.python;displayFindings(simData.findings)}if(step==='poe_generated'){simData.poeToken=await generateFakePoE(currentAuditId)}if(step==='resolved'){simData.memCommitment=randomHex(32);simData.zkProof='groth16_simulated';simData.signature=randomHex(65);showSimulationResults(simData)}if(i<PIPELINE_STEPS.length-1){await new Promise(function(resolve){var timeout=setTimeout(resolve,SIMULATION_DELAYS[i]);simulationTimeouts.push(timeout)})}}}
+function displayFindings(findings){var section=document.getElementById('findingsSection');var list=document.getElementById('findingsList');section.style.display='block';list.textContent='';findings.forEach(function(f){var sevClass='sev-'+f.severity.toLowerCase();var item=document.createElement('div');item.className='flex flex-col gap-1 py-3';var row=document.createElement('div');row.className='flex items-center gap-3';var ruleSpan=document.createElement('span');ruleSpan.className='font-mono text-xs text-on-surface-variant';ruleSpan.textContent=f.rule_id;var sevSpan=document.createElement('span');sevSpan.className='text-[10px] uppercase tracking-widest px-2 py-0.5 rounded '+sevClass;sevSpan.textContent=f.severity;row.appendChild(ruleSpan);row.appendChild(sevSpan);var msgP=document.createElement('p');msgP.className='text-sm text-on-surface';msgP.textContent=f.message;var locP=document.createElement('p');locP.className='font-mono text-xs text-outline';locP.textContent=f.file+':'+f.line;item.appendChild(row);item.appendChild(msgP);item.appendChild(locP);list.appendChild(item)})}
+function showSimulationResults(data){statusDisplay.style.display='none';resultBox.style.display='block';document.getElementById('resultToken').textContent=data.poeToken||'-';if(data.memCommitment){document.getElementById('resultMemCommitment').textContent=data.memCommitment;document.getElementById('memCommitmentRow').style.display='block'}if(data.zkProof){document.getElementById('resultZkProof').textContent='Type: '+data.zkProof+', Simulated: true';document.getElementById('zkProofRow').style.display='block'}document.getElementById('resultSignature').textContent=data.signature||'-'}
+function showResults(data){cleanupWebSocket();statusDisplay.style.display='none';resultBox.style.display='block';simulationBanner.style.display='none';var poe=data.proof_of_erasure;if(poe){document.getElementById('resultToken').textContent=poe.token||'-';if(poe.mem_commitment){document.getElementById('resultMemCommitment').textContent=poe.mem_commitment;document.getElementById('memCommitmentRow').style.display='block'}if(poe.zk_proof){document.getElementById('resultZkProof').textContent='Type: '+(poe.zk_proof.proof_type||'groth16')+', Simulated: '+(poe.zk_proof.is_simulated||false);document.getElementById('zkProofRow').style.display='block'}document.getElementById('resultSignature').textContent=poe.ecdsa_signature||'-'}if(data.findings&&data.findings.length>0){displayFindings(data.findings)}}
+function showError(message){errorBox.style.display='block';submitCard.style.display='none';statusDisplay.style.display='none';resultBox.style.display='none';document.getElementById('errorMessage').textContent=message}
+function resetDemo(){cleanupWebSocket();isSimulationMode=false;currentAuditId=null;submitCard.style.display='block';statusDisplay.style.display='none';resultBox.style.display='none';errorBox.style.display='none';simulationBanner.style.display='none';document.getElementById('simBadge').classList.add('hidden');codeTextarea.value='';resetPipeline();updateWsStatus('idle','Enter broker URL and submit to begin')}
+async function checkHealth(){var brokerUrl=getBrokerUrl();try{var response=await fetch(brokerUrl+'/health');if(response.ok){updateWsStatus('connected','Broker connected at '+brokerUrl)}else{updateWsStatus('idle','Broker responded but may be unhealthy')}}catch(e){updateWsStatus('disconnected','Broker not reachable \u2014 will use simulation mode')}}
+checkHealth();
+</script>
+</body>
+</html>
