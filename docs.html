@@ -7,6 +7,7 @@
 <meta name="description" content="Technical documentation for the Lethe protocol: Proof of Erasure specification, system architecture, and API reference.">
 
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 
@@ -258,25 +259,45 @@ body {
     <div class="bg-surface-container-low inline-block px-3 py-1 rounded text-[10px] uppercase tracking-widest text-outline mb-4">Oasis Sapphire + ROFL — Testnet</div>
     <p>This is what runs today. Confidential smart contracts on Oasis Sapphire with a real Intel TDX TEE worker via ROFL (Runtime OFf-chain Logic). See the <strong>Vision</strong> tab for where this is going.</p>
 
-    <!-- ASCII diagram styled for dark theme -->
-    <div class="bg-surface-container-low p-6 md:p-8 rounded-lg my-8 overflow-x-auto">
-      <pre class="text-xs md:text-sm text-on-surface-variant font-mono leading-relaxed" style="font-family: 'JetBrains Mono', monospace;"><span style="color:#a6acb2">
- ┌──────────────┐    ┌─────────────────────────────┐    ┌──────────────────┐
- │</span><span style="color:#60A5FA"> Requester    </span><span style="color:#a6acb2">│───▶│</span><span style="color:#FBBF24">    Oasis Sapphire           </span><span style="color:#a6acb2">│    │</span><span style="color:#4ADE80">     GitHub       </span><span style="color:#a6acb2">│
- │</span><span style="color:#60A5FA"> deposit ROSE </span><span style="color:#a6acb2">│    │</span><span style="color:#FBBF24">                             </span><span style="color:#a6acb2">│    │</span><span style="color:#4ADE80">   Private Repos  </span><span style="color:#a6acb2">│
- │</span><span style="color:#60A5FA"> register repo</span><span style="color:#a6acb2">│    │</span><span style="color:#FBBF24">  LetheMarket.sol            </span><span style="color:#a6acb2">│    │                  │
- └──────────────┘    │</span><span style="color:#FBBF24">  ReputationRegistry.sol     </span><span style="color:#a6acb2">│    └────────┬─────────┘
-                     └──────────────┬──────────────┘             │
-                                    │ roflEnsureAuthorizedOrigin  │ git clone
-                                    │ TEE-signed transactions     │ (installation token)
-                      ┌─────────────┴─────────────────────────────┴──────────┐
-                      │</span><span style="color:#c084fc">                  ROFL TEE (Intel TDX)                        </span><span style="color:#a6acb2">│
-                      │</span><span style="color:#c084fc">                                                              </span><span style="color:#a6acb2">│
-                      │</span><span style="color:#c084fc">  main.py ── Poll → Clone → Semgrep → PR → Erase → PoE       </span><span style="color:#a6acb2">│
-                      │</span><span style="color:#c084fc">  appd.py ── JSON-RPC (public) + CBOR/appd (TEE-gated)        </span><span style="color:#a6acb2">│
-                      │</span><span style="color:#c084fc">                                                              </span><span style="color:#a6acb2">│
-                      │</span><span style="color:#c084fc">  Source code exists ONLY here. Then destroyed.               </span><span style="color:#a6acb2">│
-                      └────────────────────────────────────────────────────────┘</span></pre>
+    <!-- Diagram 1: System overview (3 actors) -->
+    <div class="bg-surface-container-low p-6 md:p-8 rounded-lg my-8">
+      <pre class="mermaid">
+%%{init: {'theme': 'dark', 'themeVariables': { 'fontSize': '16px', 'nodeTextSize': '16px' }}}%%
+flowchart TB
+  R["&nbsp; Requester &nbsp;\n deposit ROSE + register repo"]
+  S["&nbsp; Oasis Sapphire &nbsp;\n LetheMarket · ReputationRegistry"]
+  T["&nbsp; ROFL TEE — Intel TDX &nbsp;\n Poll · Clone · Semgrep · Erase · PoE"]
+  G["&nbsp; GitHub &nbsp;\n Private repos · PR with findings"]
+
+  R -- "createBounty()" --> S
+  S -- "roflEnsureAuthorizedOrigin()" --> T
+  T -- "TEE-signed submitAudit()" --> S
+  S -. "ROSE payout" .-> R
+  T -- "git clone" --> G
+  G -- "installation token" --> T
+
+  style R fill:#1b2025,stroke:#60A5FA,stroke-width:2px,color:#e0e6ed
+  style S fill:#1b2025,stroke:#FBBF24,stroke-width:2px,color:#e0e6ed
+  style T fill:#1b2025,stroke:#c084fc,stroke-width:2px,color:#e0e6ed
+  style G fill:#1b2025,stroke:#4ADE80,stroke-width:2px,color:#e0e6ed
+      </pre>
+    </div>
+
+    <!-- Diagram 2: TEE internal audit flow -->
+    <p class="text-xs text-on-surface-variant uppercase tracking-widest mt-8 mb-4">Inside the TEE</p>
+    <div class="bg-surface-container-low p-6 md:p-8 rounded-lg mb-8">
+      <pre class="mermaid">
+%%{init: {'theme': 'dark', 'themeVariables': { 'fontSize': '16px' }}}%%
+flowchart LR
+  A["Poll\nbounties"] --> B["Clone\nrepo"] --> C["Semgrep\nanalysis"] --> D["Create\nPR"] --> E["Erase\nNIST 800-88"] --> F["Submit\nPoE"]
+
+  style A fill:#1b2025,stroke:#c084fc,stroke-width:2px,color:#e0e6ed
+  style B fill:#1b2025,stroke:#c084fc,stroke-width:2px,color:#e0e6ed
+  style C fill:#1b2025,stroke:#c084fc,stroke-width:2px,color:#e0e6ed
+  style D fill:#1b2025,stroke:#c084fc,stroke-width:2px,color:#e0e6ed
+  style E fill:#1b2025,stroke:#c084fc,stroke-width:2px,color:#e0e6ed
+  style F fill:#1b2025,stroke:#c084fc,stroke-width:2px,color:#e0e6ed
+      </pre>
     </div>
 
     <h3>Components</h3>
@@ -327,16 +348,31 @@ body {
     <h3>1. Decentralized Performer Model</h3>
     <p>The current system runs a single ROFL TEE auditor on Oasis Sapphire. The target replaces this with a competitive market of independent performers, each running their own TEE environment.</p>
     <div class="bg-surface-container-low p-6 rounded-lg my-4 overflow-x-auto">
-      <pre class="text-xs text-on-surface-variant font-mono leading-relaxed" style="font-family: 'JetBrains Mono', monospace;"><span style="color:#a6acb2">Current:   Bounty → LetheMarket (Sapphire) → ROFL TEE auditor → On-chain PoE
-                                                (single performer)
+      <pre class="mermaid">
+%%{init: {'theme': 'dark', 'themeVariables': { 'fontSize': '14px' }}}%%
+flowchart LR
+  B["Bounty"] --> LM["LetheMarket"]
 
-Target:    Bounty → LetheMarket (matching) → Performer's TEE → On-chain verification
-                                               ↑
-                                         Any TEE provider:
-                                         • Oasis ROFL (TDX) — current
-                                         • Self-hosted SGX/SEV
-                                         • Phala Network
-                                         • Marlin Oyster</span></pre>
+  subgraph providers["Any TEE Provider"]
+    direction TB
+    P1["Oasis ROFL ✦"]
+    P2["SGX / SEV"]
+    P3["Phala"]
+    P4["Marlin"]
+  end
+
+  LM --> providers
+  providers -->|"PoE"| V["Verify"]
+
+  style B fill:#1b2025,stroke:#FBBF24,color:#e0e6ed
+  style LM fill:#1b2025,stroke:#FBBF24,color:#e0e6ed
+  style V fill:#1b2025,stroke:#4ADE80,color:#e0e6ed
+  style providers fill:#111416,stroke:#c084fc,color:#c084fc
+  style P1 fill:#1b2025,stroke:#c084fc,color:#e0e6ed
+  style P2 fill:#1b2025,stroke:#42494e,color:#a6acb2
+  style P3 fill:#1b2025,stroke:#42494e,color:#a6acb2
+  style P4 fill:#1b2025,stroke:#42494e,color:#a6acb2
+      </pre>
     </div>
     <p>Performers register by submitting a TEE attestation to the <code>ReputationRegistry</code>. The market matches bounties to performers via sealed-bid auction. Performers compete on price, speed, and reputation — not on privileged access.</p>
 
@@ -543,11 +579,42 @@ Intel TDX / 4GB RAM / 2 vCPU / RAM storage</pre>
   </div>
 </footer>
 
-<!-- Tab switching -->
+<!-- Mermaid init + Tab switching -->
 <script>
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'dark',
+  fontFamily: 'Inter, sans-serif',
+  flowchart: { curve: 'basis', padding: 16 },
+});
+
+async function renderMermaidIn(container) {
+  var pres = container.querySelectorAll('pre.mermaid:not([data-processed])');
+  for (var i = 0; i < pres.length; i++) {
+    var pre = pres[i];
+    var id = 'mermaid-' + Math.random().toString(36).substr(2, 9);
+    try {
+      var result = await mermaid.render(id, pre.textContent.trim());
+      // SECURITY: Mermaid.render produces sanitized SVG from our own
+      // hardcoded diagram definitions (not user input). Safe to insert.
+      pre.replaceWith(Object.assign(document.createElement('div'), {
+        className: 'mermaid-rendered',
+        innerHTML: result.svg
+      }));
+    } catch (e) {
+      console.error('Mermaid render error:', e);
+    }
+  }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
-  const tabs = document.querySelectorAll('.tab-btn');
-  const contents = document.querySelectorAll('.tab-content');
+  // Render mermaid in the initially active tab
+  var activeTab = document.querySelector('.tab-content.active');
+  if (activeTab) renderMermaidIn(activeTab);
+
+  // Tab switching
+  var tabs = document.querySelectorAll('.tab-btn');
+  var contents = document.querySelectorAll('.tab-content');
 
   tabs.forEach(function(tab) {
     tab.addEventListener('click', function() {
@@ -557,7 +624,11 @@ document.addEventListener('DOMContentLoaded', function() {
       contents.forEach(function(c) { c.classList.remove('active'); });
 
       this.classList.add('active');
-      document.getElementById('tab-' + target).classList.add('active');
+      var panel = document.getElementById('tab-' + target);
+      panel.classList.add('active');
+
+      // Render mermaid diagrams when tab becomes visible
+      renderMermaidIn(panel);
     });
   });
 });
