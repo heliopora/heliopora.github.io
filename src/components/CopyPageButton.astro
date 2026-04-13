@@ -1,0 +1,82 @@
+---
+/**
+ * Floating "Copy page" button — copies the main content area as markdown-like text.
+ * Sits in the top-right of the content area, like GitHub/Google docs.
+ */
+---
+
+<button id="copy-page-btn" title="Copy page content" aria-label="Copy page content">
+  <svg id="copy-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+  </svg>
+  <svg id="check-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+    <polyline points="20 6 9 17 4 12"/>
+  </svg>
+  <span id="copy-label">Copy</span>
+</button>
+
+<style>
+  #copy-page-btn {
+    position: fixed;
+    top: 4.5rem;
+    right: 1.5rem;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.7rem;
+    border: 1px solid var(--sl-color-gray-4, #42494e);
+    border-radius: 0.375rem;
+    background: var(--sl-color-gray-6, #111416);
+    color: var(--sl-color-gray-2, #a6acb2);
+    font-size: 0.75rem;
+    font-family: var(--sl-font);
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.15s, background 0.15s, color 0.15s;
+  }
+  #copy-page-btn:hover {
+    opacity: 1;
+    background: var(--sl-color-gray-5, #20262c);
+    color: var(--sl-color-white, #e0e6ed);
+  }
+  #copy-page-btn.copied {
+    color: var(--sl-color-accent, #00b4d8);
+    border-color: var(--sl-color-accent, #00b4d8);
+    opacity: 1;
+  }
+  @media (max-width: 72rem) {
+    #copy-page-btn { display: none; }
+  }
+</style>
+
+<script>
+  document.getElementById('copy-page-btn')?.addEventListener('click', async () => {
+    const content = document.querySelector('.sl-markdown-content');
+    if (!content) return;
+
+    const text = content.innerText;
+    try {
+      await navigator.clipboard.writeText(text);
+      const btn = document.getElementById('copy-page-btn');
+      const copyIcon = document.getElementById('copy-icon');
+      const checkIcon = document.getElementById('check-icon');
+      const label = document.getElementById('copy-label');
+      if (btn && copyIcon && checkIcon && label) {
+        btn.classList.add('copied');
+        copyIcon.style.display = 'none';
+        checkIcon.style.display = 'block';
+        label.textContent = 'Copied!';
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          copyIcon.style.display = 'block';
+          checkIcon.style.display = 'none';
+          label.textContent = 'Copy';
+        }, 2000);
+      }
+    } catch (err) {
+      console.error('Copy failed:', err);
+    }
+  });
+</script>

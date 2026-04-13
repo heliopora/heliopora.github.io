@@ -12,6 +12,9 @@ export default defineConfig({
 				{ icon: 'github', label: 'GitHub', href: 'https://github.com/lethe-protocol' },
 			],
 			customCss: ['./src/styles/custom.css'],
+			components: {
+				PageFrame: './src/overrides/PageFrame.astro',
+			},
 			locales: {
 				root: { label: 'English', lang: 'en' },
 				ko: { label: '한국어', lang: 'ko' },
