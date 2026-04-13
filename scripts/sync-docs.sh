@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Sync docs from lethe-market into Starlight content directories.
-# Called by CI and by local dev (./scripts/sync-docs.sh).
+# Sync PUBLIC docs from lethe-market into Starlight content directories.
+# Only docs/public/ is synced — internal docs stay in the repo only.
 set -euo pipefail
 
 MARKET="${1:-_market}"
@@ -11,55 +11,15 @@ add_frontmatter() {
     cat "$src" >> "$dst"
 }
 
-# Vision & Strategy
-declare -A VISION=(
-    ["VISION.md"]="Vision Architecture"
-    ["ROADMAP.md"]="Roadmap"
-    ["EVOLUTION_ROADMAP.md"]="Evolution Strategy"
-    ["MANIFESTO.md"]="Manifesto"
-)
-for f in "${!VISION[@]}"; do
-    [ -f "$MARKET/docs/$f" ] || continue
-    slug=$(echo "$f" | sed 's/.md//' | tr '[:upper:]' '[:lower:]' | tr '_' '-')
-    add_frontmatter "$MARKET/docs/$f" "src/content/docs/vision/$slug.md" "${VISION[$f]}"
-done
+# Vision & Strategy (from docs/public/)
+add_frontmatter "$MARKET/docs/public/VISION.md"            "src/content/docs/vision/vision.md"        "Vision Architecture"
+add_frontmatter "$MARKET/docs/public/ROADMAP.md"           "src/content/docs/vision/roadmap.md"       "Roadmap"
+add_frontmatter "$MARKET/docs/public/MANIFESTO.md"         "src/content/docs/vision/manifesto.md"     "Manifesto"
 
 # Market Design
-declare -A MARKET_DOCS=(
-    ["MARKET_PRINCIPLES.md"]="Market Principles"
-    ["MARKET_RESULTS_AND_SETTLEMENT.md"]="Results & Settlement"
-)
-for f in "${!MARKET_DOCS[@]}"; do
-    [ -f "$MARKET/docs/$f" ] || continue
-    slug=$(echo "$f" | sed 's/.md//' | tr '[:upper:]' '[:lower:]' | tr '_' '-')
-    add_frontmatter "$MARKET/docs/$f" "src/content/docs/market/$slug.md" "${MARKET_DOCS[$f]}"
-done
-
-# Technical
-declare -A TECH=(
-    ["ENCRYPTED_DELIVERY_ARCHITECTURE.md"]="Encrypted Delivery"
-    ["OASIS_ROFL_BLOCKERS.md"]="ROFL Blockers"
-    ["poe-protocol-v2.md"]="PoE Protocol"
-)
-for f in "${!TECH[@]}"; do
-    [ -f "$MARKET/docs/$f" ] || continue
-    slug=$(echo "$f" | sed 's/.md//' | tr '[:upper:]' '[:lower:]' | tr '_' '-')
-    add_frontmatter "$MARKET/docs/$f" "src/content/docs/technical/$slug.md" "${TECH[$f]}"
-done
+add_frontmatter "$MARKET/docs/public/MARKET_PRINCIPLES.md" "src/content/docs/market/principles.md"    "Market Principles"
 
 # Participate
-declare -A PARTICIPATE=(
-    ["USER_SCENARIOS.md"]="User Scenarios"
-    ["SIMULATION_TEST_PLAN.md"]="Simulation Test Plan"
-)
-for f in "${!PARTICIPATE[@]}"; do
-    [ -f "$MARKET/docs/$f" ] || continue
-    slug=$(echo "$f" | sed 's/.md//' | tr '[:upper:]' '[:lower:]' | tr '_' '-')
-    add_frontmatter "$MARKET/docs/$f" "src/content/docs/participate/$slug.md" "${PARTICIPATE[$f]}"
-done
+add_frontmatter "$MARKET/docs/public/USER_SCENARIOS.md"    "src/content/docs/participate/user-scenarios.md" "User Scenarios"
 
-if [ -f "$MARKET/ONBOARDING.md" ]; then
-    add_frontmatter "$MARKET/ONBOARDING.md" "src/content/docs/participate/onboarding.md" "Onboarding Guide"
-fi
-
-echo "Docs synced from $MARKET"
+echo "Synced public docs from $MARKET/docs/public/"

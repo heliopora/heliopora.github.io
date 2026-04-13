@@ -8,7 +8,6 @@ export default defineConfig({
 		starlight({
 			title: 'pora',
 			tagline: 'The passage where code enters, findings emerge, and vulnerability knowledge is destroyed.',
-			// logo will be added when heliopora mascot image is ready
 			social: [
 				{ icon: 'github', label: 'GitHub', href: 'https://github.com/lethe-protocol' },
 			],
@@ -30,15 +29,9 @@ export default defineConfig({
 					autogenerate: { directory: 'market' },
 				},
 				{
-					label: 'Technical',
-					autogenerate: { directory: 'technical' },
-				},
-				{
 					label: 'Participate',
 					items: [
 						{ label: 'User Scenarios', slug: 'participate/user-scenarios' },
-						{ label: 'Simulation Plan', slug: 'participate/simulation-test-plan' },
-						{ label: 'Onboarding', slug: 'participate/onboarding' },
 					],
 				},
 			],
