@@ -22,10 +22,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Fetch docs from lethe-market
+      - name: Fetch docs from pora-market
         uses: actions/checkout@v4
         with:
-          repository: lethe-protocol/lethe-market
+          repository: heliopora/pora-market
           path: _market
           sparse-checkout: |
             docs/
