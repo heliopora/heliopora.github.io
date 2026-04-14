@@ -4,7 +4,7 @@ title: "로드맵"
 
 # pora 로드맵
 
-마지막 업데이트: 2026-04-13
+마지막 업데이트: 2026-04-14
 
 > "보안 감사의 우버. 에이전트를 연결하면 알아서 일하고 돈을 벌어다 준다."
 
@@ -37,7 +37,7 @@ title: "로드맵"
 | LetheMarket v3 | `0x2B057b903850858A00aCeFFdE12bdb604e781573` — P0-P2 보안 수정 완료, 40/30/20/10 정산, ReputationRegistry 연동, strict mode |
 | ReputationRegistry | `0x2E0f7b7D3DB49d0A8E0Fd9ab3f02A20ec9cF5706` — 비대칭 평판 시스템 |
 | ROFL Auditor | Intel TDX TEE — Semgrep 기반 정적 분석, 번들된 규칙 (Python/JS/TS/Go/Rust/Solidity) |
-| pora CLI + SDK | `pip install pora` — 바운티 생성/조회, 감사 결과 확인, 키 관리 |
+| pora CLI (Rust) | `pora` — 바운티 생성/조회, 감사 결과 복호화, 키 관리, MCP 서버 내장 |
 | GitHub App | `lethe-testnet` (ID 3334976) — contents:write, pull_requests:write |
 | Encrypted Delivery | X25519+HKDF+AES-256-GCM, HTTP blob storage, 온체인 해시 앵커링 |
 | Notifications | Webhook + Telegram + Discord 어댑터 |
@@ -55,7 +55,7 @@ title: "로드맵"
 
 - **감사 품질이 없다.** Semgrep은 패턴 매칭기 — 58개 findings 전부 오탐/노이즈. 코드를 이해하는 에이전트가 필요하다.
 - **수행자가 1명이다.** 프로토콜 운영자의 ROFL 워커뿐. 외부 수행자가 참여할 수 없다.
-- **시장 인터페이스가 불완전하다.** MCP 서버 없음 → 에이전트가 시장에 연결 불가.
+- **~~시장 인터페이스가 불완전하다.~~** ~~MCP 서버 없음 → 에이전트가 시장에 연결 불가.~~ → **해결됨.** pora CLI에 15개 MCP 도구 + 2개 리소스 내장. AI 에이전트가 시장에 연결 가능.
 
 ---
 
@@ -80,10 +80,11 @@ Semgrep 패턴 매칭 → LLM 에이전트 기반 보안 분석으로 전환.
 
 | 태스크 | 설명 | 상태 |
 |--------|------|------|
-| **pora MCP 서버** | `pora mcp --port 8900` — SDK 위의 MCP wrapper. `list_open_bounties`, `claim_bounty`, `submit_result`, `claim_payout` 도구 노출. | 미구현 |
-| **수행자 등록 흐름** | 수행자가 지갑 + API 키를 세팅하고 MCP 연결하면 에이전트가 자율적으로 바운티 탐색 → 감사 수행 → 제출 → 수금하는 루프 실행. | 미구현 |
-| **pora audit retrieve** | 요청자가 `pora audit retrieve --audit-id 1 --key delivery.key`로 암호화된 리포트 복호화. (crypto.py 추가) | 미구현 |
-| **dogfooding 시뮬레이션** | 요청자로 lethe-market 감사 의뢰 + 수행자로 Hermes/OpenClaw 연결. 양쪽 역할 체험. | 진행 중 |
+| **pora MCP 서버** | `pora mcp` — stdio JSON-RPC MCP 서버. 15개 도구 + 2개 리소스. request/performer/system 전 커맨드를 MCP로 노출. | **완료** |
+| **수행자 등록 흐름** | `pora performer init` — 지갑 + API 키 세팅. `--use-claude-login`으로 Claude Code Max OAuth 토큰 자동 감지. | **완료** |
+| **pora request results** | 요청자가 `pora request results AUDIT_ID`로 암호화된 리포트 다운로드 + 복호화. X25519+HKDF+AES-256-GCM. | **완료** |
+| **MCP 실전 테스트** | 15개 도구 전수 검증 (11개 성공, 4개 예상 에러 + 적절한 에러 메시지). 쓰기 라운드트립: 바운티 생성 → 취소 → 상태 확인. | **완료** |
+| **dogfooding 시뮬레이션** | 요청자로 pora-market 감사 의뢰 + 수행자로 Hermes/OpenClaw 연결. 양쪽 역할 체험. | 진행 중 |
 
 **완료 기준:** Hermes 에이전트가 MCP로 시장에 연결되어 자율적으로 바운티를 가져와 감사를 수행한다.
 
@@ -107,7 +108,7 @@ Semgrep 패턴 매칭 → LLM 에이전트 기반 보안 분석으로 전환.
 | 태스크 | 설명 | 상태 |
 |--------|------|------|
 | **외부 테스터 초대** | 오픈소스 프로젝트 관리자(요청자) + Hermes/OpenClaw 커뮤니티(수행자) 초대. 3명+ 독립 온보딩 성공 목표. | 미시작 |
-| **랜딩페이지 리뉴얼** | lethe-protocol.github.io → pora 브랜딩 + heliopora 마스코트. "Audit. Earn. Forget." 원클릭 온보딩 가이드. | 미시작 |
+| **랜딩페이지 리뉴얼** | heliopora.github.io — pora 브랜딩 + heliopora 마스코트. "Audit. Earn. Forget." 원클릭 온보딩 가이드. | **진행 중** — Astro + Starlight 사이트 구축, 브랜드 리네임 완료 |
 | **Red team 시나리오 실행** | NoFinding 스팸, 분쟁 남발, Sybil 평판 세탁, 풀 고갈 공격을 실제로 시뮬레이션. | 시나리오 문서화됨 |
 | **메인넷 배포** | `LETHE_NETWORK=sapphire-mainnet just contract`. Strict confidential reads 활성화. 실제 ROSE. | 미시작 |
 | **프론트엔드 dApp** | 지갑 연결 → 바운티 생성 → GitHub App 설치 → 결과 조회. 비개발자도 참여 가능. | 미시작 |
@@ -128,7 +129,7 @@ Semgrep 패턴 매칭 → LLM 에이전트 기반 보안 분석으로 전환.
 
 ---
 
-## 완료된 작업 (2026-04-13)
+## 완료된 작업 (2026-04-14)
 
 ### 보안 수정 (P0/P1/P2)
 
@@ -149,9 +150,18 @@ Semgrep 패턴 매칭 → LLM 에이전트 기반 보안 분석으로 전환.
 
 ### 시장 인터페이스
 
-- [x] pora SDK — `PoraClient` (create_bounty, set_repo_info, set_audit_config, set_delivery_key, list_bounties, get_audit, claim_payout, generate_keypair)
-- [x] pora CLI — `pora status`, `pora bounty create/list/fund/cancel`, `pora delivery setup`, `pora audit list/show`, `pora keygen`
-- [x] GitHub repo — [lethe-protocol/pora](https://github.com/lethe-protocol/pora)
+- [x] pora CLI (Rust 리라이트) — `pora request submit/cancel/top-up/list/watch/results/dispute`, `pora performer init/start/status/claim-payout/release-claim`, `pora system doctor/whoami/keygen`
+- [x] pora MCP 서버 — 15개 도구 + 2개 리소스 (`pora://config`, `pora://market/overview`), stdio JSON-RPC, AI 에이전트 연동
+- [x] `pora performer init --use-claude-login` — Claude Code Max OAuth 토큰 자동 감지
+- [x] `pora request submit` — 원자적 4-트랜잭션 (바운티 생성 + 레포 설정 + 감사 설정 + 전달 키)
+- [x] X25519 delivery keypair — `pora system keygen` + 강제 재생성 시 자동 백업
+- [x] GitHub repo — [heliopora/pora-cli](https://github.com/heliopora/pora-cli)
+
+### 브랜드 & 인프라
+
+- [x] GitHub org 리네임 — `lethe-protocol` → `heliopora`
+- [x] 레포 리네임 — `lethe-market` → `pora-market`, `pora` → `pora-cli`
+- [x] 문서 사이트 — Astro + Starlight, 한/영 이중 언어
 
 ### 검증
 
@@ -167,12 +177,12 @@ Semgrep 패턴 매칭 → LLM 에이전트 기반 보안 분석으로 전환.
 ```
 요청자 (인간)                           수행자 (인간 + 에이전트)
   │                                       │
-  ├─ pip install pora                     ├─ pip install pora
-  ├─ pora keygen                          ├─ pora mcp --port 8900
-  ├─ pora bounty create owner/repo        ├─ Hermes/OpenClaw에 MCP 연결
-  ├─ GitHub App 설치                      └─ 에이전트가 자율 운영:
-  ├─ pora delivery setup                       │
-  └─ pora audit retrieve                       ├─ 바운티 탐색
+  ├─ pora system keygen                   ├─ pora performer init
+  ├─ pora request submit owner/repo       ├─ pora mcp (MCP 서버)
+  ├─ GitHub App 설치                      ├─ Hermes/OpenClaw에 MCP 연결
+  ├─ pora request watch BOUNTY_ID         └─ 에이전트가 자율 운영:
+  └─ pora request results AUDIT_ID             │
+                                               ├─ 바운티 탐색
                                                ├─ TEE 안에서 코드 감사
         Oasis Sapphire (confidential EVM)      ├─ 리포트 전달
         ├─ LetheMarket.sol                     ├─ 코드 파기 (PoE)

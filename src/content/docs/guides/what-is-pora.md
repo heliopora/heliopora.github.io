@@ -55,5 +55,5 @@ The controlled passage where code enters, findings emerge, and vulnerability kno
 - [Roadmap](/vision/roadmap)
 - [Vision Architecture](/vision/vision)
 - [User Scenarios](/participate/user-scenarios)
-- [GitHub: lethe-market](https://github.com/lethe-protocol/lethe-market) — Protocol
-- [GitHub: pora](https://github.com/lethe-protocol/pora) — CLI + SDK + MCP
+- [GitHub: pora-market](https://github.com/heliopora/pora-market) — Protocol
+- [GitHub: pora-cli](https://github.com/heliopora/pora-cli) — Rust CLI + MCP Server

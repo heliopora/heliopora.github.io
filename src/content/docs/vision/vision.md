@@ -8,7 +8,7 @@ title: "Vision Architecture"
 
 This document describes where Lethe is going. The core infrastructure — confidential escrow, TEE worker, Proof of Erasure — is deployed on Oasis Sapphire testnet. The designs below describe the full target architecture. We publish them openly so that security researchers, protocol engineers, and agent builders can challenge, refine, and contribute.
 
-**Discuss these proposals on [GitHub Discussions](https://github.com/lethe-protocol/lethe-market/discussions).**
+**Discuss these proposals on [GitHub Discussions](https://github.com/heliopora/pora-market/discussions).**
 
 For the current stance on incentives, participant behavior, and confidentiality-oriented market design, see [MARKET_PRINCIPLES.md](MARKET_PRINCIPLES.md).
 
@@ -106,7 +106,7 @@ The market does not dictate what tools the performer uses. The market provides t
   │
   ├─ Installs agent (Claude Code, opencode, Hermes, OpenClaw, custom)
   ├─ Configures API keys (Anthropic, OpenAI, self-hosted, etc.)
-  ├─ Connects to market:  pip install pora && pora mcp --port 8900
+  ├─ Connects to market:  pora mcp (stdio MCP server)
   └─ Walks away. Agent earns autonomously.
          │
          ▼
@@ -302,7 +302,7 @@ The on-chain mechanism is implemented. The TEE worker polls the contract at conf
 | TEE Attestation | `roflEnsureAuthorizedOrigin()` | Sapphire-native TEE identity check, no external oracle |
 | Repo Access | GitHub App | Installation tokens (1-hour expiry), scoped to installed repos |
 | Performer Analysis | Agent's choice | Claude Code, opencode, Semgrep, Slither, custom — market is tool-agnostic |
-| Market Interface | pora (SDK + CLI + MCP) | `pip install pora` — agents connect via MCP, humans via CLI |
+| Market Interface | pora (Rust CLI + MCP) | Rust binary — agents connect via MCP (`pora mcp`), humans via CLI |
 | Agent Identity | ERC-8004 (planned) | 3-Registry standard (Identity + Reputation + Validation) |
 
 ---
@@ -334,7 +334,7 @@ We believe TEE-based erasure is the best available primitive today. It is not pe
 | 0 | Local simulation — full cycle without blockchain | Done |
 | 1 | On-chain escrow + off-chain execution on Base Sepolia | Done (legacy PoC) |
 | 2 | Confidential market + real TEE on Oasis Sapphire | **Done** — contracts deployed, TEE worker running, E2E verified |
-| 2.5 | Market interface — pora SDK/CLI/MCP for agent+human participation | **In progress** — SDK+CLI live, MCP planned |
+| 2.5 | Market interface — pora CLI/MCP for agent+human participation | **Done** — Rust CLI + MCP server (15 tools, 2 resources), all tested |
 | 3 | Agent-based auditing — performer agents (Claude Code, opencode) inside TEE | **Next** — 4GB TEE supports API-based agents now |
 | 4 | Multi-performer market — competitive agents, reputation, disputes | Planned |
 | 5 | Domain expansion + alternative TEE backends | Planned |

@@ -1,56 +1,152 @@
-/* pora — heliopora blue coral theme
-   Merging the previous lethe design aesthetic into Starlight:
-   - Newsreader (serif) + Inter (sans) typography
-   - Near-black background (#0c0e10)
-   - Coral blue accent (#00b4d8)
-   - Grain texture overlay
-   - Smooth fade-in animations
+/* pora — The Sophisticated Terminal
+   Design system: deep teal background, serif display + monospace labels,
+   grid lines as structure, no shadows/gradients/icons.
+   Based on stitch design mockups (seafoam_pastel DESIGN.md).
 */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..900;1,8..60,300..900&family=Source+Sans+3:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
 
 /* ── Starlight dark theme overrides ── */
 
 :root {
-	--sl-font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-	--sl-font-system: var(--sl-font);
-	--sl-color-white: #e0e6ed;
-	--sl-color-gray-1: #c3c7cb;
-	--sl-color-gray-2: #a6acb2;
-	--sl-color-gray-3: #70767c;
-	--sl-color-gray-4: #42494e;
-	--sl-color-gray-5: #20262c;
-	--sl-color-gray-6: #111416;
-	--sl-color-black: #0c0e10;
-	--sl-color-accent-low: #003459;
-	--sl-color-accent: #00b4d8;
-	--sl-color-accent-high: #90e0ef;
-	--sl-color-bg-nav: rgba(12, 14, 16, 0.95);
-	--sl-color-bg-sidebar: rgba(12, 14, 16, 0.9);
-	--sl-color-hairline-light: #20262c;
-	--sl-color-hairline-shade: #111416;
+	--sl-font: 'Source Serif 4', Georgia, serif;
+	--sl-font-system: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
+	--sl-color-white: #d6e6e1;
+	--sl-color-gray-1: #c1c8c4;
+	--sl-color-gray-2: #8b928f;
+	--sl-color-gray-3: #5a6360;
+	--sl-color-gray-4: #414845;
+	--sl-color-gray-5: #14221f;
+	--sl-color-gray-6: #0a1a17;
+	--sl-color-black: #061617;
+	--sl-color-accent-low: #1a3530;
+	--sl-color-accent: #b3ccc1;
+	--sl-color-accent-high: #cfe8dd;
+	--sl-color-bg-nav: rgba(6, 22, 23, 0.95);
+	--sl-color-bg-sidebar: rgba(6, 22, 23, 0.92);
+	--sl-color-hairline-light: #293834;
+	--sl-color-hairline-shade: #14221f;
+	--sl-color-text-accent: #91a99f;
 }
 
 [data-theme='light'] {
-	--sl-color-accent-low: #e0f7fa;
-	--sl-color-accent: #0097a7;
-	--sl-color-accent-high: #003459;
+	--sl-color-accent-low: #e8f0ec;
+	--sl-color-accent: #4d635b;
+	--sl-color-accent-high: #1b3129;
 }
 
 /* ── Typography ── */
 
 h1, h2, h3 {
-	font-family: 'Newsreader', Georgia, serif !important;
+	font-family: 'Source Serif 4', Georgia, serif !important;
+	font-weight: 500;
+	letter-spacing: -0.02em;
+}
+
+h1 {
 	font-weight: 400;
-	letter-spacing: -0.01em;
+	letter-spacing: -0.03em;
 }
 
-.serif-italic {
-	font-family: 'Newsreader', serif;
+/* Labels and metadata in sans-serif */
+nav, .sidebar-content, .pagination-links, .content-panel + aside {
+	font-family: 'Source Sans 3', sans-serif;
+}
+
+code, pre code {
+	font-family: 'Fira Code', 'Fira Mono', monospace !important;
+}
+
+/* ── Structural grid lines (terminal aesthetic) ── */
+
+/* Sidebar border */
+.sidebar {
+	border-right: 1px solid #293834;
+}
+
+/* Content area subtle left anchor */
+.content-panel {
+	border-left: 1px solid transparent;
+}
+
+/* ── Code blocks — terminal style ── */
+
+pre {
+	border: 1px solid #414845;
+	border-radius: 0.125rem;
+	background-color: #04110e !important;
+}
+
+/* Inline code */
+:not(pre) > code {
+	border-radius: 0.125rem;
+	border: 1px solid #414845;
+	background-color: #101e1b !important;
+	font-size: 0.875em;
+	padding: 0.125em 0.375em;
+}
+
+/* ── Blockquote — italic serif for taglines ── */
+
+blockquote {
+	font-family: 'Source Serif 4', serif;
 	font-style: italic;
+	font-size: 1.1em;
+	border-left-color: #91a99f;
+	color: #cfc4c3;
+	border-left-width: 1px;
 }
 
-/* ── Grain texture overlay ── */
+/* ── Links — subtle underline ── */
+
+a {
+	text-decoration-thickness: 1px;
+	text-underline-offset: 3px;
+}
+
+/* ── Tables — thin grid lines ── */
+
+table {
+	border-collapse: collapse;
+}
+
+th, td {
+	border-color: #414845;
+}
+
+th {
+	font-family: 'Source Sans 3', sans-serif;
+	font-weight: 600;
+	text-transform: uppercase;
+	font-size: 0.75em;
+	letter-spacing: 0.08em;
+	color: #4D7B82;
+}
+
+/* ── Smooth fade-in on content ── */
+
+.sl-markdown-content > * {
+	animation: fadeInUp 0.5s ease both;
+}
+
+.sl-markdown-content > *:nth-child(1) { animation-delay: 0s; }
+.sl-markdown-content > *:nth-child(2) { animation-delay: 0.04s; }
+.sl-markdown-content > *:nth-child(3) { animation-delay: 0.08s; }
+.sl-markdown-content > *:nth-child(4) { animation-delay: 0.12s; }
+.sl-markdown-content > *:nth-child(5) { animation-delay: 0.16s; }
+
+@keyframes fadeInUp {
+	from {
+		opacity: 0;
+		transform: translateY(8px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* ── Grain texture overlay (very subtle) ── */
 
 body::before {
 	content: '';
@@ -59,61 +155,25 @@ body::before {
 	left: 0;
 	width: 100%;
 	height: 100%;
-	opacity: 0.03;
+	opacity: 0.02;
 	pointer-events: none;
 	z-index: 9999;
 	background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
 }
 
-/* ── Smooth fade-in on content ── */
-
-.sl-markdown-content > * {
-	animation: fadeInUp 0.6s ease both;
-}
-
-.sl-markdown-content > *:nth-child(1) { animation-delay: 0s; }
-.sl-markdown-content > *:nth-child(2) { animation-delay: 0.05s; }
-.sl-markdown-content > *:nth-child(3) { animation-delay: 0.1s; }
-.sl-markdown-content > *:nth-child(4) { animation-delay: 0.15s; }
-.sl-markdown-content > *:nth-child(5) { animation-delay: 0.2s; }
-
-@keyframes fadeInUp {
-	from {
-		opacity: 0;
-		transform: translateY(12px);
-	}
-	to {
-		opacity: 1;
-		transform: translateY(0);
-	}
-}
-
-/* ── Sidebar refinements ── */
+/* ── Navigation refinements ── */
 
 nav.sidebar {
-	backdrop-filter: blur(8px);
+	backdrop-filter: blur(6px);
 }
 
-/* ── Blockquote styling (for taglines) ── */
-
-blockquote {
-	font-family: 'Newsreader', serif;
-	font-style: italic;
-	font-size: 1.15em;
-	border-left-color: var(--sl-color-accent);
-	color: var(--sl-color-gray-1);
+/* Hero section (if used in Starlight content) */
+.hero {
+	font-family: 'Source Serif 4', serif;
 }
 
-/* ── Code blocks ── */
+/* ── Border radius override — sharp terminal edges ── */
 
-pre {
-	border: 1px solid var(--sl-color-gray-4);
-	border-radius: 0.5rem;
-}
-
-/* ── Links ── */
-
-a {
-	text-decoration-thickness: 1px;
-	text-underline-offset: 2px;
+.card, .starlight-aside, details {
+	border-radius: 0.125rem !important;
 }

@@ -44,11 +44,11 @@ TEE도 탈중앙화도 아닌, 이 경험이 핵심.
 
 ```
 Step 1: pora CLI 설치
-  $ pip install pora
+  $ cargo install --git https://github.com/heliopora/pora-cli.git
 
 Step 2: 시장 둘러보기 + 수익 추정
   $ pora status
-  $ pora bounty list
+  $ pora request list
   → "3개 바운티가 열려있네. lethe-market 감사에 2 ROSE."
 
   $ pora performer estimate --provider anthropic --model claude-sonnet-4-20250514
@@ -167,10 +167,10 @@ Step 5: 에이전트 자율 루프 시작
 
 ```
 Step 1: pora CLI 설치
-  $ pip install pora
+  $ cargo install --git https://github.com/heliopora/pora-cli.git
 
 Step 2: 배달 키 생성
-  $ pora keygen
+  $ pora system keygen
   → pora-delivery.key (개인키, 백업 필수)
   → pora-delivery.pub (공개키)
 
@@ -179,7 +179,7 @@ Step 3: GitHub App 설치
   → Installation ID 자동 감지 또는 URL에서 확인
 
 Step 4: 바운티 생성 (한 명령으로 전부)
-  $ pora bounty create owner/repo \
+  $ pora request submit owner/repo \
       --amount 2 \
       --trigger on-push \
       --delivery-key pora-delivery.pub \
@@ -204,13 +204,13 @@ Step 5: Uber Moment — PR이 열리면 자동 감사
   → [박씨] PR 코멘트에서 바로 확인. 별도 CLI 불필요.
 
 Step 6: 암호화 배달 (선택적, 프라이빗 레포용)
-  $ pora bounty watch 3
+  $ pora request watch 3
   → [polling] "Audit #4 complete! 2 findings."
   → [자동] 암호화 리포트 복호화 + 출력
 
 Step 7: 결과 검토
   → findings가 진짜면: 아무것도 안 함 (보너스 자동 지급)
-  → findings가 가짜면: $ pora audit dispute 4
+  → findings가 가짜면: $ pora request dispute 4
 ```
 
 ### 왜 이것이 기존 플랫폼과 다른가
@@ -229,13 +229,13 @@ pora:        PR 열릴 때마다 자동 감사. 에이전트가 24시간 감시.
 
 | 구성요소 | 현재 상태 | 필요한 것 |
 |---------|----------|---------|
-| `pora bounty create` | 있음 (3단계 분리) | 한 명령으로 create+setRepoInfo+setConfig+setDelivery 통합 |
+| `pora request submit` | **완료** (원자적 4-트랜잭션) | ~~한 명령으로 create+setRepoInfo+setConfig+setDelivery 통합~~ 구현됨 |
 | Installation ID 자동 감지 | 미구현 | GitHub API로 자동 조회 (GET /user/installations) |
 | `--tool-mode` 옵션 | 미구현 | CLI에 추가 |
 | **ON_PUSH 트리거** | 미구현 | GitHub webhook → ROFL 워커 즉시 실행 (폴링 대신) |
 | **PR 코멘트 배달** | 미구현 | findings를 GitHub PR comment로 직접 전달 |
-| `pora bounty watch` | 미구현 | 폴링 루프 + 완료 시 자동 retrieve |
-| `pora audit dispute` | 미구현 | CLI 명령 추가 |
+| `pora request watch` | **완료** | NDJSON 이벤트 스트림 |
+| `pora request dispute` | **완료** | CLI 명령 구현, MCP 도구 포함 |
 
 ---
 
@@ -351,7 +351,7 @@ NoFindings인 경우:
 2차: Scenario B Step 5의 Uber Moment
      → ON_PUSH 트리거 + PR 코멘트 배달
      → "GitHub 연결하면 PR마다 보안 스윕이 온다" — 이것이 요청자를 끌어들이는 경험
-     → pora bounty create를 통합 명령으로 개선 (installation ID 자동 감지 포함)
+     → pora request submit 통합 명령 구현 완료 (installation ID 자동 감지 포함)
 
 3차: Scenario A Step 2의 수익 추정 + Step 4의 수행자 등록
      → pora performer estimate + pora performer register

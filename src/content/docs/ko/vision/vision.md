@@ -8,7 +8,7 @@ title: "비전 아키텍처"
 
 이 문서는 Lethe가 나아갈 방향을 설명한다. 핵심 인프라 — 기밀 에스크로, TEE 워커, Proof of Erasure — 는 Oasis Sapphire 테스트넷에 배포되어 있다. 아래의 설계는 최종 목표 아키텍처를 기술한다. 보안 연구자, 프로토콜 엔지니어, 에이전트 빌더가 이를 검토하고, 반박하고, 기여할 수 있도록 공개한다.
 
-**[GitHub Discussions](https://github.com/lethe-protocol/lethe-market/discussions)에서 제안을 나눠주세요.**
+**[GitHub Discussions](https://github.com/heliopora/pora-market/discussions)에서 제안을 나눠주세요.**
 
 인센티브, 참여자 행동, 기밀성 중심 시장 설계에 대한 현재의 입장은 [MARKET_PRINCIPLES.md](MARKET_PRINCIPLES.md)를 참고한다.
 
@@ -106,7 +106,7 @@ title: "비전 아키텍처"
   │
   ├─ 에이전트 설치 (Claude Code, opencode, Hermes, OpenClaw, 커스텀)
   ├─ API 키 설정 (Anthropic, OpenAI, 자체 호스팅 등)
-  ├─ 시장 연결:  pip install pora && pora mcp --port 8900
+  ├─ 시장 연결:  pora mcp (stdio MCP 서버)
   └─ 자리를 뜬다. 에이전트가 자율적으로 수익을 낸다.
          │
          ▼
@@ -302,7 +302,7 @@ Phase 4: AI 모델 보안 (적대적 견고성)
 | TEE 어테스테이션 | `roflEnsureAuthorizedOrigin()` | Sapphire 네이티브 TEE 신원 확인, 외부 오라클 불필요 |
 | 레포 접근 | GitHub App | 설치 토큰 (1시간 만료), 설치된 레포로 범위 제한 |
 | 수행자 분석 | 에이전트 선택 | Claude Code, opencode, Semgrep, Slither, 커스텀 — 도구 무관 시장 |
-| 시장 인터페이스 | pora (SDK + CLI + MCP) | `pip install pora` — 에이전트는 MCP, 인간은 CLI로 연결 |
+| 시장 인터페이스 | pora (Rust CLI + MCP) | Rust 바이너리 — 에이전트는 MCP (`pora mcp`), 인간은 CLI로 연결 |
 | 에이전트 신원 | ERC-8004 (계획 중) | 3-Registry 표준 (신원 + 평판 + 검증) |
 
 ---
@@ -334,7 +334,7 @@ TEE 기반 소거가 현재 사용 가능한 최선의 프리미티브라고 믿
 | 0 | 로컬 시뮬레이션 — 블록체인 없이 전체 사이클 | 완료 |
 | 1 | 온체인 에스크로 + Base Sepolia 오프체인 실행 | 완료 (레거시 PoC) |
 | 2 | Oasis Sapphire의 기밀 시장 + 실제 TEE | **완료** — 컨트랙트 배포, TEE 워커 실행, E2E 검증 |
-| 2.5 | 시장 인터페이스 — 에이전트+인간 참여를 위한 pora SDK/CLI/MCP | **진행 중** — SDK+CLI 출시, MCP 계획 중 |
+| 2.5 | 시장 인터페이스 — 에이전트+인간 참여를 위한 pora CLI/MCP | **완료** — Rust CLI + MCP 서버 (15개 도구, 2개 리소스), 전수 테스트 완료 |
 | 3 | 에이전트 기반 감사 — TEE 내부의 수행자 에이전트 (Claude Code, opencode) | **다음** — 4GB TEE에서 API 기반 에이전트 지원 |
 | 4 | 멀티 수행자 시장 — 경쟁 에이전트, 평판, 분쟁 | 계획 중 |
 | 5 | 도메인 확장 + 대체 TEE 백엔드 | 계획 중 |

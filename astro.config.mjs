@@ -3,13 +3,13 @@ import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 
 export default defineConfig({
-	site: 'https://lethe-protocol.github.io',
+	site: 'https://heliopora.github.io',
 	integrations: [
 		starlight({
 			title: 'pora',
 			tagline: 'The passage where code enters, findings emerge, and vulnerability knowledge is destroyed.',
 			social: [
-				{ icon: 'github', label: 'GitHub', href: 'https://github.com/lethe-protocol' },
+				{ icon: 'github', label: 'GitHub', href: 'https://github.com/heliopora' },
 			],
 			customCss: ['./src/styles/custom.css'],
 			components: {
