@@ -1,0 +1,192 @@
+{
+  "name": "seafoam-pastel",
+  "type": "dark",
+  "colors": {
+    "editor.background": "#1a2627",
+    "editor.foreground": "#d4e7d4",
+    "terminal.background": "#1a2627",
+    "terminal.foreground": "#d4e7d4",
+    "sideBar.background": "#243435",
+    "activityBar.background": "#1f2d2e"
+  },
+  "tokenColors": [
+    {
+      "scope": [
+        "comment",
+        "punctuation.definition.comment",
+        "string.comment"
+      ],
+      "settings": {
+        "foreground": "#8A8A8A",
+        "fontStyle": "italic"
+      }
+    },
+    {
+      "scope": [
+        "string",
+        "punctuation.definition.string",
+        "string.quoted"
+      ],
+      "settings": {
+        "foreground": "#825D4D"
+      }
+    },
+    {
+      "scope": [
+        "keyword",
+        "keyword.control",
+        "storage",
+        "storage.type",
+        "variable.language"
+      ],
+      "settings": {
+        "foreground": "#729494"
+      }
+    },
+    {
+      "scope": [
+        "entity.name.function",
+        "support.function"
+      ],
+      "settings": {
+        "foreground": "#7AC3CF"
+      }
+    },
+    {
+      "scope": [
+        "variable",
+        "support.variable",
+        "variable.other",
+        "variable.parameter"
+      ],
+      "settings": {
+        "foreground": "#8A7267"
+      }
+    },
+    {
+      "scope": [
+        "constant",
+        "constant.numeric",
+        "constant.language",
+        "constant.character",
+        "constant.other"
+      ],
+      "settings": {
+        "foreground": "#ADA16D"
+      }
+    },
+    {
+      "scope": [
+        "entity.name.type",
+        "entity.name.class",
+        "support.type",
+        "support.class"
+      ],
+      "settings": {
+        "foreground": "#728C62"
+      }
+    },
+    {
+      "scope": [
+        "entity.name.tag",
+        "meta.tag.sgml",
+        "markup.deleted.git_gutter"
+      ],
+      "settings": {
+        "foreground": "#729494"
+      }
+    },
+    {
+      "scope": [
+        "entity.other.attribute-name",
+        "meta.selector.css",
+        "entity.other.attribute-name.class.css",
+        "entity.other.attribute-name.id.css",
+        "entity.other.attribute-name.pseudo-class.css"
+      ],
+      "settings": {
+        "foreground": "#4D7B82"
+      }
+    },
+    {
+      "scope": [
+        "punctuation",
+        "meta.brace",
+        "punctuation.definition.parameters",
+        "punctuation.definition.array",
+        "punctuation.definition.dictionary"
+      ],
+      "settings": {
+        "foreground": "#757575"
+      }
+    },
+    {
+      "scope": [
+        "markup.heading",
+        "markup.heading.marker",
+        "entity.name.section"
+      ],
+      "settings": {
+        "foreground": "#98D9AA",
+        "fontStyle": "bold"
+      }
+    },
+    {
+      "scope": [
+        "entity.name.command",
+        "entity.name.function",
+        "support.function",
+        "support.function.command",
+        "meta.function-call",
+        "keyword.other.special-method",
+        "meta.block.command.bash"
+      ],
+      "settings": {
+        "foreground": "#728C62"
+      }
+    },
+    {
+      "scope": [
+        "string.unquoted.argument",
+        "variable.parameter",
+        "constant.character.escape",
+        "entity.name.tag",
+        "meta.attribute.bash",
+        "meta.argument.bash",
+        "variable.other.readwrite"
+      ],
+      "settings": {
+        "foreground": "#ADA16D"
+      }
+    },
+    {
+      "scope": [
+        "variable.language",
+        "variable.other.normal",
+        "support.variable",
+        "support.class"
+      ],
+      "settings": {
+        "foreground": "#8A7267"
+      }
+    },
+    {
+      "scope": [
+        "support.type.property-name",
+        "meta.object-literal.key"
+      ],
+      "settings": {
+        "foreground": "#4D7B82"
+      }
+    },
+    {
+      "scope": [
+        "string.quoted.double.json",
+        "string.quoted.single.json"
+      ],
+      "settings": {
+        "foreground": "#825D4D"
+      }
+    }
+  ]
+}

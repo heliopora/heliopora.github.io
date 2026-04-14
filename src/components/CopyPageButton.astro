@@ -18,10 +18,10 @@
 
 <style>
   #copy-page-btn {
-    position: fixed;
-    top: 4.5rem;
-    right: 1.5rem;
-    z-index: 100;
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 10;
     display: flex;
     align-items: center;
     gap: 0.35rem;
@@ -38,16 +38,13 @@
   }
   #copy-page-btn:hover {
     opacity: 1;
-    background: var(--sl-color-gray-5, #20262c);
-    color: var(--sl-color-white, #e0e6ed);
+    background: #2a3d3e; /* accent-low */
+    color: #e0e0e0; /* white */
   }
   #copy-page-btn.copied {
-    color: var(--sl-color-accent, #00b4d8);
-    border-color: var(--sl-color-accent, #00b4d8);
+    color: #729494; /* accent */
+    border-color: #729494;
     opacity: 1;
-  }
-  @media (max-width: 72rem) {
-    #copy-page-btn { display: none; }
   }
 </style>
 
