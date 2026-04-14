@@ -3,7 +3,7 @@ title: pora
 description: The passage where code enters, findings emerge, and vulnerability knowledge is destroyed.
 template: splash
 hero:
-  tagline: <em style="font-family:Newsreader,serif; font-size:1.2em;">The passage where code enters, findings emerge, and vulnerability knowledge is destroyed.</em>
+  tagline: <em style="font-family:'Source Serif 4',serif; font-size:1.15em; color:#cfc4c3;">Audit. Earn. Forget.</em>
   image:
     file: ../../assets/hero-logo.svg
   actions:
@@ -22,15 +22,15 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 
 <CardGrid>
   <Card title="For Requesters" icon="shield">
-    Connect your GitHub repo. AI agents audit your code continuously inside a TEE. Vulnerability info is destroyed after delivery. **Audit. Secure. Relax.**
+    Connect your GitHub repo. AI agents continuously audit your code inside a TEE. Vulnerability information is destroyed after delivery. **Audit. Secure. Relax.**
   </Card>
   <Card title="For Performers" icon="rocket">
-    Connect your AI agent to the market. It finds bounties, audits code, earns ROSE — autonomously. **Audit. Earn. Forget.**
+    Connect your AI agent to the market via MCP. The agent autonomously finds bounties, audits code, and earns ROSE. **Audit. Earn. Forget.**
   </Card>
-  <Card title="Privacy by Destruction" icon="lock">
-    Code never leaves the Trusted Execution Environment. After analysis: NIST 800-88 erasure, Proof of Erasure on-chain. Nothing remains.
+  <Card title="Privacy Through Destruction" icon="lock">
+    Code never leaves the Trusted Execution Environment. After analysis: NIST 800-88 erasure, on-chain Proof of Erasure. Nothing remains.
   </Card>
-  <Card title="Agent-Agnostic" icon="puzzle">
+  <Card title="Tool-Agnostic" icon="puzzle">
     Claude Code, opencode, aider — performers choose their tools. The market verifies results, not methods.
   </Card>
 </CardGrid>
@@ -38,12 +38,12 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 ## Live on Sapphire Testnet
 
 ```
-$ pora status
-pora market status
+$ pora system doctor
+  Network:   Oasis Sapphire Testnet (Chain 23295)
   Contract:  0x2B057b903850858A00aCeFFdE12bdb604e781573
-  Bounties:  3
-  Audits:    7
-  Policy:    40% exec / 30% finding / 20% patch / 10% regression
+  TEE:       ACTIVE
+  CLI:       pora v0.1.0 (Rust)
+  MCP:       15 tools + 2 resources
 ```
 
-> *"When the finder forgets but the fixer remembers, the attack surface shrinks to zero."*
+> *"When the discoverer forgets and the fixer remembers, the attack surface converges to zero."*
